@@ -14,6 +14,12 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
+
+
+
+
+
+
         MaterialPageRoute(builder: (context) => HomePage()),
       );
     });
@@ -23,13 +29,15 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SizedBox.expand(  // ياخد كل مساحة الشاشة
+      body: Center(
         child: Image.asset(
           'assets/Image HomeScreen/logoApp.png',
-          fit: BoxFit.cover,  // أو جرب BoxFit.fill لو عايز يضغط الصورة
+          fit: BoxFit.cover,  // استخدم BoxFit.cover لتغطية كامل الشاشة
+          width: double.infinity, // لعرض الصورة بالكامل
+          height: double.infinity, // لتمديد الصورة لتغطية كامل الارتفاع
         ),
-      ),
+      )
+
     );
   }
-
 }
