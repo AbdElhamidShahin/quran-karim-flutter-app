@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
-
 class PrayerService {
   final Dio _dio;
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -31,11 +30,12 @@ class PrayerService {
   }
 
   Future<void> playAdhan(String prayerName) async {
-    String adhanFile = 'assets/4032.mp3';  // المسار الصوتي
-    await _audioPlayer.setSource(AssetSource(adhanFile));  // استخدام AssetSource
-    await _audioPlayer.play(AssetSource('/4032.mp3'));
-    debugPrint('تم تشغيل صوت الأذان');
+    String adhanFile = '4032.mp3'; // تأكد إنه في مجلد assets
+    await _audioPlayer.stop(); // لو فيه صوت شغال
+    await _audioPlayer.play(AssetSource(adhanFile));
+    debugPrint('✅ تم تشغيل الأذان لصلاة $prayerName');
   }
+
   Map<String, String> _parsePrayerTimes(Map<String, dynamic> timings) {
     const prayerMapping = {
       'الفجر': 'Fajr',
@@ -47,7 +47,7 @@ class PrayerService {
 
     final result = <String, String>{};
     prayerMapping.forEach((key, value) {
-      result[key] = timings[value] ?? '--:--';
+      result[key] = timings[value]?.substring(0,5) ?? '--:--';
     });
     return result;
   }
