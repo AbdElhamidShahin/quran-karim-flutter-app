@@ -16,7 +16,7 @@ class MyQuranPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(120), // ارتفاع مخصص
+        preferredSize: const Size.fromHeight(130), // ارتفاع مخصص
         child: Column(
           children: [
             CustomAppBar(title: 'القرأن الكريم'),
