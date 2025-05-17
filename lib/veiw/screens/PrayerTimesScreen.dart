@@ -87,7 +87,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     DateTime? nextPrayerDateTime;
     String nextPrayer = '';
 
-    final prayersInOrder = [
+    final prayers = [
       {'name': 'الفجر', 'time': _prayerTimes['الفجر']},
       {'name': 'الظهر', 'time': _prayerTimes['الظهر']},
       {'name': 'العصر', 'time': _prayerTimes['العصر']},
@@ -95,7 +95,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       {'name': 'العشاء', 'time': _prayerTimes['العشاء']},
     ];
 
-    for (final prayer in prayersInOrder) {
+    for (final prayer in prayers) {
       final timeStr = prayer['time'];
       if (timeStr == null) continue;
 
@@ -106,29 +106,15 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       final minute = int.tryParse(timeParts[1]);
       if (hour == null || minute == null) continue;
 
-      var prayerDateTime = DateTime(now.year, now.month, now.day, hour, minute);
+      var prayerTime = DateTime(now.year, now.month, now.day, hour, minute);
 
-      if (prayerDateTime.isBefore(now)) {
-        if (prayer['name'] == 'العشاء') {
-          final fajrTime = prayersInOrder[0]['time']?.split(':');
-          if (fajrTime != null && fajrTime.length == 2) {
-            prayerDateTime = DateTime(
-              now.year,
-              now.month,
-              now.day + 1,
-              int.parse(fajrTime[0]),
-              int.parse(fajrTime[1]),
-            );
-            nextPrayer = prayersInOrder[0]['name']!;
-            nextPrayerDateTime = prayerDateTime;
-            break;
-          }
-        }
-        continue;
+      // إذا كانت الصلاة قد مضت، نضيف يومًا كاملاً
+      if (prayerTime.isBefore(now)) {
+        prayerTime = prayerTime.add(const Duration(days: 1));
       }
 
-      if (nextPrayerDateTime == null || prayerDateTime.isBefore(nextPrayerDateTime)) {
-        nextPrayerDateTime = prayerDateTime;
+      if (nextPrayerDateTime == null || prayerTime.isBefore(nextPrayerDateTime)) {
+        nextPrayerDateTime = prayerTime;
         nextPrayer = prayer['name']!;
       }
     }
@@ -140,7 +126,6 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       });
     }
   }
-
   void _checkAndPlayAdhan() async {
     final now = DateTime.now();
 

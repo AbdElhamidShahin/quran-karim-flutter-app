@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -14,35 +16,45 @@ class PrayerService {
   ));
 
   Future<Map<String, String>> fetchPrayerTimesIfNeeded(double lat, double lng) async {
-    final prefs = await SharedPreferences.getInstance();
-    final today = DateTime.now().toIso8601String().substring(0, 10); // YYYY-MM-DD
-    final lastUpdate = prefs.getString('last_prayer_update');
+    final response = await Dio().get(
+      'https://api.aladhan.com/v1/timings',
+      queryParameters: {
+        'latitude': lat,
+        'longitude': lng,
+        'method': 5,  'timezonestring': DateTime.now().timeZoneName,
 
-    if (lastUpdate != today) {
-      final prayerTimes = await fetchPrayerTimes(lat, lng);
-      await prefs.setString('last_prayer_update', today);
-      return prayerTimes;
+        // Egyptian General Authority
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final timings = response.data['data']['timings'] as Map<String, dynamic>;
+      return timings.map((key, value) => MapEntry(key, value.toString()));
     } else {
-      debugPrint('📆 مواقيت الصلاة محدثة بالفعل اليوم.');
-      // يمكنك هنا استرجاع المواقيت من كاش (لو خزنتها)
-      return {};
+      throw Exception("Failed to fetch prayer times");
     }
   }
-
   Future<Map<String, String>> fetchPrayerTimes(double lat, double lng) async {
     try {
+      final now = DateTime.now();
+      final timeZone = now.timeZoneOffset.inHours;
+
       final response = await _dio.get('/timings', queryParameters: {
         'latitude': lat,
         'longitude': lng,
-        'method': 2,
+        'method': 5, // Egyptian General Authority
+        'timezonestring': 'Africa/Cairo', // أو استخدام timeZone
+        'date': '${now.day}-${now.month}-${now.year}',
       });
 
       if (response.statusCode == 200) {
-        return _parsePrayerTimes(response.data['data']['timings']);
+        final timings = response.data['data']['timings'] as Map<String, dynamic>;
+        return _parsePrayerTimes(timings);
       }
-      throw 'خطأ في الاستجابة: ${response.statusCode}';
+      throw 'Failed to load prayer times: ${response.statusCode}';
     } catch (e) {
-      throw 'فشل في جلب مواقيت الصلاة: $e';
+      debugPrint('Error fetching prayer times: $e');
+      throw 'Failed to load prayer times: $e';
     }
   }
 
@@ -54,18 +66,32 @@ class PrayerService {
   }
 
   Map<String, String> _parsePrayerTimes(Map<String, dynamic> timings) {
-    const prayerMapping = {
-      'الفجر': 'Fajr',
-      'الظهر': 'Dhuhr',
-      'العصر': 'Asr',
-      'المغرب': 'Maghrib',
-      'العشاء': 'Isha',
-    };
-
     final result = <String, String>{};
-    prayerMapping.forEach((key, value) {
-      result[key] = timings[value]?.substring(0, 5) ?? '--:--';
-    });
+
+    // الأوقات الأساسية
+    result['الفجر'] = _formatTime(timings['Fajr']);
+    result['الظهر'] = _formatTime(timings['Dhuhr']);
+    result['العصر'] = _formatTime(timings['Asr']);
+    result['المغرب'] = _formatTime(timings['Maghrib']);
+    result['العشاء'] = _formatTime(timings['Isha']);
+
     return result;
+  }
+
+  String _formatTime(String timeStr) {
+    try {
+      final parts = timeStr.split(' ');
+      final timeParts = parts[0].split(':');
+      final hour = int.parse(timeParts[0]);
+      final minute = int.parse(timeParts[1]);
+
+      // تحويل إلى تنسيق 24 ساعة
+      if (parts.length > 1 && parts[1] == 'PM' && hour < 12) {
+        return '${hour + 12}:${minute.toString().padLeft(2, '0')}';
+      }
+      return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return timeStr.split(' ')[0]; // العودة إلى القيمة الأصلية في حالة الخطأ
+    }
   }
 }

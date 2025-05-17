@@ -6,6 +6,7 @@ import '../PrayerTime.dart';
 import '../api/apiServise.dart';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+
 class PrayerBloc extends Bloc<PrayerEvent, PrayerState> {
   final PrayerService prayerService;
   final Connectivity connectivity;
@@ -15,9 +16,9 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState> {
   }
 
   Future<void> _onFetchPrayerTimes(
-      FetchPrayerTimes event,
-      Emitter<PrayerState> emit,
-      ) async {
+    FetchPrayerTimes event,
+    Emitter<PrayerState> emit,
+  ) async {
     emit(PrayerLoadingState());
 
     final connectivityResult = await connectivity.checkConnectivity();
@@ -27,15 +28,11 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState> {
     }
 
     try {
-      final timings = await prayerService.fetchPrayerTimes(event.lat, event.lng);
+      final timings =
+          await prayerService.fetchPrayerTimesIfNeeded(event.lat, event.lng);
       emit(PrayerLoadedState(timings));
     } catch (e) {
-      emit(PrayerErrorState(e.toString()));
+      emit(PrayerErrorState("حدث خطأ أثناء جلب البيانات"));
     }
   }
-
-
-
-
-
 }
