@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import '../../model/azkarModel/Seaarch ScreenSora.dart';
 import '../../model/item.dart';
 import '../../model/JsonScreen.dart';
 import '../../veiw_model/helper/thems/TextStyle.dart';
 import '../../veiw_model/helper/thems/color.dart';
+import '../wedgit/Custom SearchScreen.dart';
 import '../wedgit/CustomAppBar.dart';
 import '../wedgit/CustomQuranPage.dart';
 
@@ -13,7 +15,19 @@ class MyQuranPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: ("القرأن الكريم")),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(120), // ارتفاع مخصص
+        child: Column(
+          children: [
+            CustomAppBar(title: 'القرأن الكريم'),
+            CustomSearchscreen(text: 'ابحث عن السوره', ontap: () {    Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SearchScreen()),
+            ); },),
+          ],
+        ),
+      ),
+
 
       body: Directionality(
         textDirection: TextDirection.rtl,

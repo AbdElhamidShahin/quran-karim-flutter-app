@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PrayerService {
   final Dio _dio;
@@ -11,6 +12,22 @@ class PrayerService {
     connectTimeout: const Duration(seconds: 5),
     receiveTimeout: const Duration(seconds: 5),
   ));
+
+  Future<Map<String, String>> fetchPrayerTimesIfNeeded(double lat, double lng) async {
+    final prefs = await SharedPreferences.getInstance();
+    final today = DateTime.now().toIso8601String().substring(0, 10); // YYYY-MM-DD
+    final lastUpdate = prefs.getString('last_prayer_update');
+
+    if (lastUpdate != today) {
+      final prayerTimes = await fetchPrayerTimes(lat, lng);
+      await prefs.setString('last_prayer_update', today);
+      return prayerTimes;
+    } else {
+      debugPrint('📆 مواقيت الصلاة محدثة بالفعل اليوم.');
+      // يمكنك هنا استرجاع المواقيت من كاش (لو خزنتها)
+      return {};
+    }
+  }
 
   Future<Map<String, String>> fetchPrayerTimes(double lat, double lng) async {
     try {
@@ -30,8 +47,8 @@ class PrayerService {
   }
 
   Future<void> playAdhan(String prayerName) async {
-    String adhanFile = '4032.mp3'; // تأكد إنه في مجلد assets
-    await _audioPlayer.stop(); // لو فيه صوت شغال
+    String adhanFile = '4032.mp3';
+    await _audioPlayer.stop();
     await _audioPlayer.play(AssetSource(adhanFile));
     debugPrint('✅ تم تشغيل الأذان لصلاة $prayerName');
   }
@@ -47,7 +64,7 @@ class PrayerService {
 
     final result = <String, String>{};
     prayerMapping.forEach((key, value) {
-      result[key] = timings[value]?.substring(0,5) ?? '--:--';
+      result[key] = timings[value]?.substring(0, 5) ?? '--:--';
     });
     return result;
   }

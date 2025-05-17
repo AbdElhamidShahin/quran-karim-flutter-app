@@ -28,6 +28,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   bool _isAdhanPlaying = false;
   late AudioPlayer _audioPlayer;
   Set<String> _playedPrayers = {}; // عشان مانشغلش الأذان مرتين لنفس الصلاة
+  DateTime _lastPrayerUpdateDate = DateTime.now();
 
   @override
   void initState() {
@@ -64,6 +65,16 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   void startPrayerTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      final now = DateTime.now();
+
+      // ✅ إذا مر يوم جديد، نعيد تحميل البيانات
+      if (now.day != _lastPrayerUpdateDate.day ||
+          now.month != _lastPrayerUpdateDate.month ||
+          now.year != _lastPrayerUpdateDate.year) {
+        _lastPrayerUpdateDate = now;
+        fetchData(); // جلب مواقيت الصلاة من جديد
+      }
+
       if (_prayerTimes.isNotEmpty) {
         _calculateNextPrayerTimes();
         _checkAndPlayAdhan();
