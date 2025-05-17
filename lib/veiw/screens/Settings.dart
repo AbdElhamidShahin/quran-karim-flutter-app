@@ -113,7 +113,7 @@ class Setings extends StatelessWidget {
               icon: Icons.chat_outlined,
               title: 'تواصل معنا',
               onPressed: () {
-                _launchUrl("https://wa.me/message/UX62WBG5XFVCP1");
+                _launchUrl("https://mail.google.com/mail/?view=cm&fs=1&to=abdelhamid.shahin0@gmail.com");
               },
             ),
           ],
