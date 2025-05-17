@@ -1,16 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:quran_app/model/item.dart';
-import '../../veiw_model/helper/saveLastReadPage.dart';
 import '../../veiw_model/helper/thems/TextStyle.dart';
 import '../../veiw_model/helper/thems/color.dart';
-import '../QuranDetailsScreen.dart';
 import '../wedgit/Dashboard.dart';
 import '../wedgit/LastReadWidget.dart';
 import 'Settings.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +15,7 @@ class HomePage extends StatelessWidget {
     var height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      drawer: Drawer(child: Column(children: [Expanded(child: Setings())])),
+      endDrawer: Drawer(child: Column(children: [Expanded(child: Setings())])),
       appBar: AppBar(
         scrolledUnderElevation: 0,
         elevation: 0,
@@ -27,13 +24,12 @@ class HomePage extends StatelessWidget {
         centerTitle: true,
         actions: [
           Builder(
-            builder:
-                (context) => IconButton(
-                  icon: Icon(Icons.menu, color: primaryColor),
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                ),
+            builder: (context) => IconButton(
+              icon: Icon(Icons.menu, color: primaryColor),
+              onPressed: () {
+                Scaffold.of(context).openEndDrawer();
+              },
+            ),
           ),
         ],
         title: Text("القرأن الكريم", style: appBarTitleStyle()),
@@ -56,7 +52,6 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 12),
-
               LastReadWidget(width: width, height: height),
               Dashboard(height: height),
               SizedBox(height: 24),

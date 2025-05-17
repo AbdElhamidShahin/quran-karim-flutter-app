@@ -15,106 +15,109 @@ class Setings extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
-    return Scaffold(
-      body: ListView(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        padding: const EdgeInsets.all(16),
-        children: [
-          SizedBox(height: 32),
-          _buildSettingsOption(
-            context,
-            icon: Icons.privacy_tip,
-            title: 'سياسة الخصوصية',
-            onPressed: () {
-              _launchUrl(
-                "https://www.privacypolicies.com/live/17f74ba9-74a8-486e-abc5-12e159600ce5",
-              );
-            },
-          ),
-          _buildSettingsOption(
-            context,
-            icon: Icons.star,
-            title: 'تقييم التطبيق',
-            onPressed: () {
-              _launchUrl("");
-            },
-          ),
-          _buildSettingsOption(
-            context,
-            icon: Icons.share,
-            title: 'مشاركة',
-            onPressed: () {
-              Share.share(
-                'https://play.google.com/store/apps/details?id=com.yourcompanyname.yourappname&fbclid=IwZXh0bgNhZW0CMTAAAR1zobhWeqLMCQDh_XmcPyNn7xHySVpG1MSrQs70NWFhZ_17bsnXV9936ls_aem_xXW5vyMyfUmyH9kifCQD1Q',
-              );
-            },
-          ),
-          _buildSettingsOption(
-            context,
-            icon: Icons.warning,
-            title: 'تحذير',
-            onPressed: () {
-              _showWarningDialog(context);
-            },
-          ),
-          _buildSettingsOption(
-            context,
-            icon: Icons.question_answer_sharp,
-            title: 'عن التطبيق',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AboutAppPage()),
-              );
-            },
-          ),
-          Card(
-            color: Colors.white,
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        body: ListView(
+          physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          padding: const EdgeInsets.all(16),
+          children: [
+            SizedBox(height: 32),
+            _buildSettingsOption(
+              context,
+              icon: Icons.privacy_tip,
+              title: 'سياسة الخصوصية',
+              onPressed: () {
+                _launchUrl(
+                  "https://www.privacypolicies.com/live/17f74ba9-74a8-486e-abc5-12e159600ce5",
+                );
+              },
             ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 12,
+            _buildSettingsOption(
+              context,
+              icon: Icons.star,
+              title: 'تقييم التطبيق',
+              onPressed: () {
+                _launchUrl("");
+              },
+            ),
+            _buildSettingsOption(
+              context,
+              icon: Icons.share,
+              title: 'مشاركة',
+              onPressed: () {
+                Share.share(
+                  'https://play.google.com/store/apps/details?id=com.yourcompanyname.yourappname&fbclid=IwZXh0bgNhZW0CMTAAAR1zobhWeqLMCQDh_XmcPyNn7xHySVpG1MSrQs70NWFhZ_17bsnXV9936ls_aem_xXW5vyMyfUmyH9kifCQD1Q',
+                );
+              },
+            ),
+            _buildSettingsOption(
+              context,
+              icon: Icons.warning,
+              title: 'تحذير',
+              onPressed: () {
+                _showWarningDialog(context);
+              },
+            ),
+            _buildSettingsOption(
+              context,
+              icon: Icons.question_answer_sharp,
+              title: 'عن التطبيق',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutAppPage()),
+                );
+              },
+            ),
+            Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              leading: Container(
-                height: 34,
-                width: 34,
-                decoration: BoxDecoration(
-                  color: primaryDark.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 12,
                 ),
-                child: Icon(
-                  isDarkMode ? Icons.nightlight_round : Icons.wb_sunny,
-                  color: primaryDark,
-                  size: 22,
+                leading: Container(
+                  height: 34,
+                  width: 34,
+                  decoration: BoxDecoration(
+                    color: primaryDark.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(
+                    isDarkMode ? Icons.nightlight_round : Icons.wb_sunny,
+                    color: primaryDark,
+                    size: 22,
+                  ),
                 ),
-              ),
-              title: Text(
-                isDarkMode ? 'الوضع الليلي' : 'الوضع النهاري',
-                style: SttingsTextStyle(),
-              ),
-              trailing: Switch(
-                value: isDarkMode,
-                onChanged: (value) {
-                  themeProvider.toggleTheme();
-                },
-                activeColor: primaryDark,
+                title: Text(
+                  isDarkMode ? 'الوضع الليلي' : 'الوضع النهاري',
+                  style: SttingsTextStyle(),
+                ),
+                trailing: Switch(
+                  value: isDarkMode,
+                  onChanged: (value) {
+                    themeProvider.toggleTheme();
+                  },
+                  activeColor: primaryDark,
+                ),
               ),
             ),
-          ),
-          _buildSettingsOption(
-            context,
-            icon: Icons.chat_outlined,
-            title: 'تواصل معنا',
-            onPressed: () {
-              _launchUrl("https://wa.me/message/UX62WBG5XFVCP1");
-            },
-          ),
-        ],
+            _buildSettingsOption(
+              context,
+              icon: Icons.chat_outlined,
+              title: 'تواصل معنا',
+              onPressed: () {
+                _launchUrl("https://wa.me/message/UX62WBG5XFVCP1");
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
