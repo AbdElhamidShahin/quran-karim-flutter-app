@@ -110,7 +110,7 @@ class Setings extends StatelessWidget {
             ),
             _buildSettingsOption(
               context,
-              icon: Icons.chat_outlined,
+              icon: Icons.mail_outline_rounded,
               title: 'تواصل معنا',
               onPressed: () {
                 _launchUrl("https://mail.google.com/mail/?view=cm&fs=1&to=abdelhamid.shahin0@gmail.com");

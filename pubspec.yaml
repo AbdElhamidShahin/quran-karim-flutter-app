@@ -54,7 +54,6 @@ dependencies:
   flutter_animate: ^4.2.0
   animations: ^2.0.7
   share_plus: ^11.0.0
-  rename: ^3.0.2
 
 
 

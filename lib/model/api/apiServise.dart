@@ -3,37 +3,18 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class PrayerService {
   final Dio _dio;
-  final AudioPlayer _audioPlayer = AudioPlayer();
-
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
   PrayerService({Dio? dio}) : _dio = dio ?? Dio(BaseOptions(
     baseUrl: 'https://api.aladhan.com/v1',
     connectTimeout: const Duration(seconds: 5),
     receiveTimeout: const Duration(seconds: 5),
   ));
 
-  Future<Map<String, String>> fetchPrayerTimesIfNeeded(double lat, double lng) async {
-    final response = await Dio().get(
-      'https://api.aladhan.com/v1/timings',
-      queryParameters: {
-        'latitude': lat,
-        'longitude': lng,
-        'method': 5,  'timezonestring': DateTime.now().timeZoneName,
-
-        // Egyptian General Authority
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final timings = response.data['data']['timings'] as Map<String, dynamic>;
-      return timings.map((key, value) => MapEntry(key, value.toString()));
-    } else {
-      throw Exception("Failed to fetch prayer times");
-    }
-  }
   Future<Map<String, String>> fetchPrayerTimes(double lat, double lng) async {
     try {
       final now = DateTime.now();
@@ -59,12 +40,28 @@ class PrayerService {
   }
 
   Future<void> playAdhan(String prayerName) async {
-    String adhanFile = '4032.mp3';
-    await _audioPlayer.stop();
-    await _audioPlayer.play(AssetSource(adhanFile));
-    debugPrint('✅ تم تشغيل الأذان لصلاة $prayerName');
-  }
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'adhan_channel_id',
+      'Adhan Notifications',
+      channelDescription: 'قناة إشعارات الأذان',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('adhan_sound'), // ملف الصوت في android res/raw
+    );
 
+    const NotificationDetails notificationDetails =
+    NotificationDetails(android: androidDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'الأذان - $prayerName',
+      'حان وقت صلاة $prayerName',
+      notificationDetails,
+    );
+
+    debugPrint('✅ تم تشغيل إشعار الأذان لصلاة $prayerName');
+  }
   Map<String, String> _parsePrayerTimes(Map<String, dynamic> timings) {
     final result = <String, String>{};
 

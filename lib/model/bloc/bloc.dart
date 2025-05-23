@@ -29,7 +29,8 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState> {
 
     try {
       final timings =
-          await prayerService.fetchPrayerTimesIfNeeded(event.lat, event.lng);
+          await prayerService.fetchPrayerTimes(event.lat, event.lng);
+
       emit(PrayerLoadedState(timings));
     } catch (e) {
       emit(PrayerErrorState("حدث خطأ أثناء جلب البيانات"));

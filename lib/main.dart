@@ -1,3 +1,4 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,10 +9,14 @@ import 'package:quran_app/veiw_model/helper/thems/ThemeProviderDarkMode.dart';
 import 'package:quran_app/veiw_model/helper/thems/color.dart';
 import 'model/ItemProvider.dart';
 import 'model/api/apiServise.dart';
+import 'model/api/playAdhanServise.dart';
 import 'model/bloc/bloc.dart';
 
+
+
+
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+
 
   runApp(
     MultiProvider(
@@ -26,6 +31,7 @@ void main() async {
     ),
   );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
