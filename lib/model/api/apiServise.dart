@@ -1,7 +1,5 @@
-import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -39,30 +37,7 @@ class PrayerService {
     }
   }
 
-  Future<void> playAdhan(String prayerName) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'adhan_channel_id',
-      'Adhan Notifications',
-      channelDescription: 'قناة إشعارات الأذان',
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: true,
-      sound: RawResourceAndroidNotificationSound('adhan_sound'), // ملف الصوت في android res/raw
-    );
-
-    const NotificationDetails notificationDetails =
-    NotificationDetails(android: androidDetails);
-
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      'الأذان - $prayerName',
-      'حان وقت صلاة $prayerName',
-      notificationDetails,
-    );
-
-    debugPrint('✅ تم تشغيل إشعار الأذان لصلاة $prayerName');
-  }
-  Map<String, String> _parsePrayerTimes(Map<String, dynamic> timings) {
+  Map<String, String> _parsePrayerTimes(Map<String, dynamic> timings) {//لتحديد الوقت
     final result = <String, String>{};
 
     // الأوقات الأساسية
@@ -82,7 +57,7 @@ class PrayerService {
       final hour = int.parse(timeParts[0]);
       final minute = int.parse(timeParts[1]);
 
-      // تحويل إلى تنسيق 24 ساعة
+      // تحويل إلى تنسيق 12 ساعة
       if (parts.length > 1 && parts[1] == 'PM' && hour < 12) {
         return '${hour + 12}:${minute.toString().padLeft(2, '0')}';
       }

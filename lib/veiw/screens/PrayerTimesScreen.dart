@@ -1,149 +1,102 @@
 import 'dart:async';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
+
 import '../../model/PrayerTime.dart';
-import '../../model/api/apiServise.dart';
+import '../../model/api/playAdhanServise.dart';
 import '../../model/bloc/bloc.dart';
 import '../../model/bloc/states.dart';
+import '../../veiw/wedgit/CustomAppBar.dart';
+import '../../veiw/wedgit/buildLoadingShimmer.dart';
+import '../../veiw/wedgit/buildPrayerTimesUI.dart';
 import '../../veiw_model/helper/Position/getPosition.dart';
-import '../wedgit/CustomAppBar.dart';
-import '../wedgit/buildLoadingShimmer.dart';
-import '../wedgit/buildPrayerTimesUI.dart';
 
 class PrayerTimesScreen extends StatefulWidget {
-  const PrayerTimesScreen({super.key});
+  const PrayerTimesScreen({Key? key}) : super(key: key);
 
   @override
   State<PrayerTimesScreen> createState() => _PrayerTimesScreenState();
 }
 
 class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
-  late final PrayerService _prayerService;
   String nextPrayerName = '';
   Duration remainingTime = Duration.zero;
   Timer? _timer;
   Map<String, String> _prayerTimes = {};
-  bool _isAdhanPlaying = false;
-  late AudioPlayer _audioPlayer;
-  Set<String> _playedPrayers = {}; // عشان مانشغلش الأذان مرتين لنفس الصلاة
   DateTime _lastPrayerUpdateDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    _prayerService = PrayerService();
-    _audioPlayer = AudioPlayer();
-    fetchData();
+    _fetchAndStart();
   }
 
   @override
   void dispose() {
-    _audioPlayer.stop();
-    _audioPlayer.dispose();
     _timer?.cancel();
     super.dispose();
   }
 
-  Future<void> fetchData() async {
+  void _fetchAndStart() {
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
     try {
       final position = await getPosition();
       context.read<PrayerBloc>().add(
         FetchPrayerTimes(lat: position.latitude, lng: position.longitude),
       );
-    } catch (e) {
+    } catch (_) {
       context.read<PrayerBloc>().add(
         FetchPrayerTimes(lat: 30.0444, lng: 31.2357),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
       );
     }
   }
 
-  void startPrayerTimer() {
+  void _startTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       final now = DateTime.now();
 
-      // ✅ إذا مر يوم جديد، نعيد تحميل البيانات
       if (now.day != _lastPrayerUpdateDate.day ||
           now.month != _lastPrayerUpdateDate.month ||
           now.year != _lastPrayerUpdateDate.year) {
         _lastPrayerUpdateDate = now;
-        fetchData(); // جلب مواقيت الصلاة من جديد
+        _fetchData();
       }
 
       if (_prayerTimes.isNotEmpty) {
-        _calculateNextPrayerTimes();
-        _checkAndPlayAdhan();
+        _calculateNextPrayer();
       }
     });
   }
 
-  void _calculateNextPrayerTimes() {
+  void _calculateNextPrayer() {
     final now = DateTime.now();
-    DateTime? nextPrayerDateTime;
-    String nextPrayer = '';
+    DateTime? nextTime;
+    String nextName = '';
 
-    final prayers = [
-      {'name': 'الفجر', 'time': _prayerTimes['الفجر']},
-      {'name': 'الظهر', 'time': _prayerTimes['الظهر']},
-      {'name': 'العصر', 'time': _prayerTimes['العصر']},
-      {'name': 'المغرب', 'time': _prayerTimes['المغرب']},
-      {'name': 'العشاء', 'time': _prayerTimes['العشاء']},
-    ];
-
-    for (final prayer in prayers) {
-      final timeStr = prayer['time'];
-      if (timeStr == null) continue;
-
-      final timeParts = timeStr.split(':');
-      if (timeParts.length != 2) continue;
-
-      final hour = int.tryParse(timeParts[0]);
-      final minute = int.tryParse(timeParts[1]);
-      if (hour == null || minute == null) continue;
-
-      var prayerTime = DateTime(now.year, now.month, now.day, hour, minute);
-
-      // إذا كانت الصلاة قد مضت، نضيف يومًا كاملاً
-      if (prayerTime.isBefore(now)) {
-        prayerTime = prayerTime.add(const Duration(days: 1));
+    _prayerTimes.forEach((name, time) {
+      final parts = time.split(':');
+      if (parts.length != 2) return;
+      final h = int.tryParse(parts[0]);
+      final m = int.tryParse(parts[1]);
+      if (h == null || m == null) return;
+      var t = DateTime(now.year, now.month, now.day, h, m);
+      if (t.isBefore(now)) t = t.add(const Duration(days: 1));
+      if (nextTime == null || t.isBefore(nextTime!)) {
+        nextTime = t;
+        nextName = name;
       }
+    });
 
-      if (nextPrayerDateTime == null || prayerTime.isBefore(nextPrayerDateTime)) {
-        nextPrayerDateTime = prayerTime;
-        nextPrayer = prayer['name']!;
-      }
-    }
-
-    if (nextPrayerDateTime != null) {
+    if (nextTime != null) {
       setState(() {
-        nextPrayerName = nextPrayer;
-        remainingTime = nextPrayerDateTime!.difference(now);
+        nextPrayerName = nextName;
+        remainingTime = nextTime!.difference(now);
       });
-    }
-  }
-  void _checkAndPlayAdhan() async {
-    final now = DateTime.now();
-
-    for (final entry in _prayerTimes.entries) {
-      final timeParts = entry.value.split(':');
-      if (timeParts.length != 2) continue;
-
-      final prayerHour = int.tryParse(timeParts[0]);
-      final prayerMinute = int.tryParse(timeParts[1]);
-      if (prayerHour == null || prayerMinute == null) continue;
-
-      final prayerTime = DateTime(now.year, now.month, now.day, prayerHour, prayerMinute);
-
-      if (now.difference(prayerTime).inSeconds.abs() < 5 && !_playedPrayers.contains(entry.key)) {
-        _playedPrayers.add(entry.key);
-        await _prayerService.playAdhan(entry.key);
-        debugPrint('🎶 تم تشغيل الأذان لصلاة ${entry.key}');
-      }
     }
   }
 
@@ -155,46 +108,40 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
         builder: (context, state) {
           if (state is PrayerLoadingState) {
             return Center(child: buildLoadingShimmer());
-          } else if (state is PrayerLoadedState) {
+          }
+          if (state is PrayerLoadedState) {
             if (_prayerTimes != state.times) {
               _prayerTimes = state.times;
-              _playedPrayers.clear();
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                _calculateNextPrayerTimes();
-                startPrayerTimer();
+
+                _calculateNextPrayer();
+                _startTimer();
               });
             }
             return buildPrayerTimesUI(
               state.times,
               nextPrayerName,
               remainingTime,
-              _isAdhanPlaying,
-            );
-          } else if (state is PrayerErrorState) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Lottie.asset(
-                    'assets/Animation - 1745055052923.json',
-                    width: 250,
-                    height: 250,
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'لا يوجد اتصال بالإنترنت',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'يرجى التحقق من الشبكة والمحاولة مرة أخرى',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                ],
-              ),
+              false,
             );
           }
-          return Center(child: buildLoadingShimmer());
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Lottie.asset(
+                  'assets/Animation - 1745055052923.json',
+                  width: 200,
+                  height: 200,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'فشل في جلب البيانات، حاول لاحقًا',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );
