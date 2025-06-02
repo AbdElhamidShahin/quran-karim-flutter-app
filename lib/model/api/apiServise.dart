@@ -16,16 +16,19 @@ class PrayerService {
   Future<Map<String, String>> fetchPrayerTimes(double lat, double lng) async {
     try {
       final now = DateTime.now();
-      final timeZone = now.timeZoneOffset.inHours;
 
       final response = await _dio.get('/timings', queryParameters: {
         'latitude': lat,
         'longitude': lng,
-        'method': 5, // Egyptian General Authority
-        'timezonestring': 'Africa/Cairo', // أو استخدام timeZone
+        'method': 4, // تغيير إلى طريقة جامعة الأزهر
+        'school': 0, // المذهب الحنفي (0) أو الشافعي (1)
+        'timezonestring': 'Africa/Cairo',
         'date': '${now.day}-${now.month}-${now.year}',
       });
-
+      final timeZone = now.timeZoneOffset.inHours;
+      if (timeZone != 2) { // توقيت القاهرة
+        debugPrint('Warning: Device timezone ($timeZone) differs from Cairo (2)');
+      }
       if (response.statusCode == 200) {
         final timings = response.data['data']['timings'] as Map<String, dynamic>;
         return _parsePrayerTimes(timings);

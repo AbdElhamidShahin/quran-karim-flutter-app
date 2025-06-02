@@ -77,18 +77,35 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     final now = DateTime.now();
     DateTime? nextTime;
     String nextName = '';
+    String currentPrayer = '';
 
     _prayerTimes.forEach((name, time) {
-      final parts = time.split(':');
-      if (parts.length != 2) return;
-      final h = int.tryParse(parts[0]);
-      final m = int.tryParse(parts[1]);
-      if (h == null || m == null) return;
-      var t = DateTime(now.year, now.month, now.day, h, m);
-      if (t.isBefore(now)) t = t.add(const Duration(days: 1));
+      try {
+        final parts = time.split(':');
+        if (parts.length != 2) return;
+
+        final h = int.tryParse(parts[0]);
+        final m = int.tryParse(parts[1]);
+        if (h == null || m == null) return;
+
+        var t = DateTime(now.year, now.month, now.day, h, m);
+
+        // تحديد إذا كانت هذه الصلاة هي الحالية
+        if (now.isAfter(t.subtract(const Duration(minutes: 2)))) {
+        currentPrayer = name;
+        }
+
+        // إذا كان الوقت قد مضى اليوم، نضيف يومًا
+        if (t.isBefore(now)) {
+      t = t.add(const Duration(days: 1));
+      }
+
       if (nextTime == null || t.isBefore(nextTime!)) {
-        nextTime = t;
-        nextName = name;
+      nextTime = t;
+      nextName = name;
+      }
+      } catch (e) {
+      debugPrint('Error calculating prayer time for $name: $e');
       }
     });
 
@@ -96,11 +113,19 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       setState(() {
         nextPrayerName = nextName;
         remainingTime = nextTime!.difference(now);
+
+        // إرسال إشعار إذا كانت هناك صلاة حالية
+        if (currentPrayer.isNotEmpty) {
+          NotificationService.showPrayerNotification(
+            prayerName: currentPrayer,
+            prayerTime: _prayerTimes[currentPrayer]!,
+          );
+        }
       });
     }
-  }
 
-  @override
+}
+    @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: 'مواقيت الصلاة'),

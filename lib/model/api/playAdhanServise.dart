@@ -1,41 +1,47 @@
-// notification_service.dart
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
-  static final _plugin = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin notificationsPlugin =
+  FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
-    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    await _plugin.initialize(
-      InitializationSettings(android: androidInit),
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const InitializationSettings initializationSettings =
+    InitializationSettings(
+      android: initializationSettingsAndroid,
+    );
+
+    await notificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (details) {},
     );
   }
 
-  /// لإظهار إشعار فوري (مستخدم في الـ callback)
-  static Future<void> showPeriodicNotification({
-    required String title,
-    required String body,
+  static Future<void> showPrayerNotification({
+    required String prayerName,
+    required String prayerTime,
   }) async {
-    await _plugin.show(
+    const AndroidNotificationDetails androidNotificationDetails =
+    AndroidNotificationDetails(
+      'prayer_channel',
+      'Prayer Notifications',
+      channelDescription: 'Channel for prayer notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+    );
+
+    await notificationsPlugin.show(
       0,
-      title,
-      body,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'periodic_channel',
-          'Periodic Notifications',
-          channelDescription: 'إشعارات كل 5 دقائق',
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
-        ),
-      ),
+      'حان وقت الصلاة',
+      'صلاة $prayerName ($prayerTime)',
+      notificationDetails,
     );
   }
-}
-void periodicNotificationCallback() {
-  NotificationService.showPeriodicNotification(
-    title: 'تذكير',
-    body: 'هذا إشعار كل 5 دقائق',
-  );
 }
