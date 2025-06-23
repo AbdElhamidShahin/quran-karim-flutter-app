@@ -1,89 +1,77 @@
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:quran_app/veiw_model/helper/Position/getPosition.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:io';
-import 'package:quran_app/veiw/screens/SplashScreen.dart';
-import 'package:quran_app/veiw_model/helper/thems/ThemeProviderDarkMode.dart';
-import 'package:quran_app/veiw_model/helper/thems/color.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'model/ItemProvider.dart';
+import 'model/api/NotificationService.dart';
 import 'model/api/apiServise.dart';
-import 'model/api/playAdhanServise.dart';
 import 'model/bloc/bloc.dart';
+import 'veiw/screens/SplashScreen.dart';
+import 'veiw_model/helper/thems/ThemeProviderDarkMode.dart';
+import 'veiw_model/helper/thems/color.dart';
+import 'veiw_model/helper/Position/getPosition.dart';
 
 @pragma('vm:entry-point')
-void prayerNotificationCallback() async {
-  try {
-    final prayerService = PrayerService();
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
     final position = await getPosition();
+    final prayerService = PrayerService();
     final prayerTimes = await prayerService.fetchPrayerTimes(
       position.latitude,
       position.longitude,
     );
 
     final now = DateTime.now();
-    String currentPrayer = '';
+    for (var entry in prayerTimes.entries) {
+      final parts = entry.value.split(':');
+      if (parts.length != 2) continue;
 
-    // تحديد الصلاة الحالية
-    for (final entry in prayerTimes.entries) {
-      final timeParts = entry.value.split(':');
-      final prayerTime = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        int.parse(timeParts[0]),
-        int.parse(timeParts[1]),
-      );
+      final hour = int.tryParse(parts[0]);
+      final minute = int.tryParse(parts[1]);
+      if (hour == null || minute == null) continue;
 
-      if (now.isAfter(prayerTime.subtract(const Duration(minutes: 2)))) {
-        currentPrayer = entry.key;
+      final prayerTime = DateTime(now.year, now.month, now.day, hour, minute);
+      if (now.isAfter(prayerTime) &&
+          now.isBefore(prayerTime.add(const Duration(minutes: 1)))) {
+        await NotificationService.showPrayerNotification(
+          prayerName: entry.key,
+          time: entry.value,
+        );
       }
     }
-
-    if (currentPrayer.isNotEmpty) {
-      await NotificationService.showPrayerNotification(
-        prayerName: currentPrayer,
-        prayerTime: prayerTimes[currentPrayer]!,
-      );
-    }
-  } catch (e) {
-    debugPrint('Error in prayer notification: $e');
-  }
-}
-
-void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) {
-    prayerNotificationCallback();
-    return Future.value(true);
+    return true;
   });
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await NotificationService.init();
+  await Permission.notification.request();
 
-  await NotificationService.initialize();
-  await AndroidAlarmManager.initialize();
+  await Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: false,
+  );
 
-  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-
-  // تسجيل المهمة الدورية كل 15 دقيقة (أقل فترة مسموحة)
   await Workmanager().registerPeriodicTask(
-    "prayer-task",
-    "prayerNotification",
-    frequency: const Duration(minutes: 15),
+    "prayerTask",
+    "prayer_notification",
+    frequency: const Duration(hours: 1), // أفضل للأداء والبطارية
+    initialDelay: const Duration(seconds: 10),
+    constraints: Constraints(
+      networkType: NetworkType.connected,
+    ),
   );
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ItemProvider()),
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        BlocProvider<PrayerBloc>(
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        BlocProvider(
           create: (_) => PrayerBloc(PrayerService(), Connectivity()),
         ),
       ],
@@ -98,7 +86,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
     return MaterialApp(
       title: 'تطبيق القرآن',
       debugShowCheckedModeBanner: false,

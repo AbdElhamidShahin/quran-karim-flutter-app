@@ -17,14 +17,14 @@ Widget buildPrayerTimesUI(
       final minute = timeParts[1];
 
       final period = hour >= 12 ? 'PM' : 'AM';
-      final hour12 = hour > 12 ? hour - 12 : hour;
+      final hour12 = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
 
       return '$hour12:$minute $period';
     } catch (e) {
-      return time24; // إذا حدث خطأ نعيد الوقت كما هو
+      debugPrint('Error converting to 12-hour format: $e');
+      return time24;
     }
   }
-
   final orderedPrayers = [
     {'name': 'الفجر', 'time': times['الفجر'] ?? '--:--'},
     {'name': 'الظهر', 'time': times['الظهر'] ?? '--:--'},
@@ -74,7 +74,7 @@ Widget buildPrayerTimesUI(
                 Text(
                   isAdhanPlaying
                       ? 'حان وقت الصلاة'
-                      : 'الوقت المتبقي: ${remainingTime.inHours.toString().padLeft(2, '0')}:${(remainingTime.inMinutes % 60).toString().padLeft(2, '0')}:${(remainingTime.inSeconds % 60).toString().padLeft(2, '0')}',
+                      : 'الوقت المتبقي: ${remainingTime.inHours.remainder(24).toString().padLeft(2, '0')}:${(remainingTime.inMinutes.remainder(60)).toString().padLeft(2, '0')}:${(remainingTime.inSeconds.remainder(60)).toString().padLeft(2, '0')}',
                   style: const TextStyle(fontSize: 20),
                 ),
               ],
