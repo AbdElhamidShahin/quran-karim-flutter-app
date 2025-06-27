@@ -12,10 +12,13 @@ import 'veiw/screens/SplashScreen.dart';
 import 'veiw_model/helper/thems/ThemeProviderDarkMode.dart';
 import 'veiw_model/helper/thems/color.dart';
 import 'veiw_model/helper/Position/getPosition.dart';
-
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+@pragma('vm:entry-point')
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
+    tz.initializeTimeZones();
     final position = await getPosition();
     final prayerService = PrayerService();
     final prayerTimes = await prayerService.fetchPrayerTimes(
@@ -24,29 +27,45 @@ void callbackDispatcher() {
     );
 
     final now = DateTime.now();
+
     for (var entry in prayerTimes.entries) {
-      final parts = entry.value.split(':');
+      final name = entry.key;
+      final time = entry.value;
+
+      final parts = time.split(':');
       if (parts.length != 2) continue;
 
       final hour = int.tryParse(parts[0]);
       final minute = int.tryParse(parts[1]);
+
       if (hour == null || minute == null) continue;
 
-      final prayerTime = DateTime(now.year, now.month, now.day, hour, minute);
-      if (now.isAfter(prayerTime) &&
-          now.isBefore(prayerTime.add(const Duration(minutes: 1)))) {
-        await NotificationService.showPrayerNotification(
-          prayerName: entry.key,
-          time: entry.value,
+      final scheduledTime = tz.TZDateTime.local(
+        now.year,
+        now.month,
+        now.day,
+        hour,
+        minute,
+      );
+
+      // لو الصلاة لسه جاية، وجدول إشعارها
+      if (scheduledTime.isAfter(now)) {
+        await NotificationService.showScheduledNotification(
+          prayerName: name,
+          time: time,
+          scheduledTime: scheduledTime,
         );
       }
     }
+
     return true;
   });
 }
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Permission.notification.request();
 
   await NotificationService.init();
   await Permission.notification.request();
@@ -58,13 +77,12 @@ void main() async {
 
   await Workmanager().registerPeriodicTask(
     "prayerTask",
-    "prayer_notification",
-    frequency: const Duration(hours: 1), // أفضل للأداء والبطارية
+    "daily_prayer_scheduler",
+    frequency: const Duration(hours: 24),
     initialDelay: const Duration(seconds: 10),
-    constraints: Constraints(
-      networkType: NetworkType.connected,
-    ),
+    constraints: Constraints(networkType: NetworkType.connected),
   );
+
 
   runApp(
     MultiProvider(

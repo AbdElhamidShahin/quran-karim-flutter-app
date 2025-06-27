@@ -43,7 +43,7 @@ dependencies:
   geolocator: ^13.0.4
   bloc: ^9.0.0
   flutter_bloc: ^9.1.0
-  timezone: ^0.10.0
+  timezone: ^0.10.1
   connectivity_plus: ^6.1.4
   intl: ^0.18.1
   lottie: ^3.3.1
@@ -55,7 +55,7 @@ dependencies:
   animations: ^2.0.7
   share_plus: ^11.0.0
   android_alarm_manager_plus: ^4.0.7
-  flutter_local_notifications: ^18.0.1
+  flutter_local_notifications: ^18.0.0
   permission_handler: ^12.0.0+1
   workmanager: ^0.6.0
 
