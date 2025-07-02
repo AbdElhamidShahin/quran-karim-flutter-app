@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import 'AzkarCategoryModel.dart';
 import 'ItemAzkatr.dart';
 
 Future<List<AzkarCategoryModel>> fetchAzkarCategoryFromJson() async {

@@ -5,6 +5,7 @@ import '../../veiw/wedgit/CustomAzkarPage.dart';
 import '../../veiw_model/helper/thems/TextStyle.dart';
 import '../../veiw_model/helper/thems/color.dart';
 import '../suraMap.dart';
+import 'AzkarCategoryModel.dart';
 import 'ItemAzkatr.dart';
 import 'azkarJsonScreen.dart';
 

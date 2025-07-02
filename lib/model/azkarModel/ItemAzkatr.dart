@@ -1,17 +1,22 @@
 class AzkarModel {
-  final int id;
-  final String text;
-  final int count;
-  final String audio;
-  final String filename;
+  int _id;
+  String _text;
+  int _count;
+  String _audio;
+  String _filename;
+
 
   AzkarModel({
-    required this.id,
-    required this.text,
-    required this.count,
-    required this.audio,
-    required this.filename,
-  });
+    required int id,
+    required String text,
+    required int count,
+    required String audio,
+    required String filename,
+  })  : _id = id,
+        _text = text,
+        _count = count,
+        _audio = audio,
+        _filename = filename;
 
   factory AzkarModel.fromJson(Map<String, dynamic> json) {
     return AzkarModel(
@@ -31,43 +36,34 @@ class AzkarModel {
       'filename': filename,
     };
   }
-}
+  int get id => _id;
 
-class AzkarCategoryModel {
-  final int id;
-  final String category;
-  final String audio;
-  final String filename;
-  final List<AzkarModel> array;
-
-  AzkarCategoryModel({
-    required this.id,
-    required this.category,
-    required this.audio,
-    required this.filename,
-    required this.array,
-  });
-
-  factory AzkarCategoryModel.fromJson(Map<String, dynamic> json) {
-    var list = json['array'] as List;
-    List<AzkarModel> azkarList =
-        list.map((i) => AzkarModel.fromJson(i)).toList();
-
-    return AzkarCategoryModel(
-      id: json['id'],
-      category: json['category'],
-      audio: json['audio'],
-      filename: json['filename'],
-      array: azkarList,
-    );
+  set id(int value) {
+    _id = value;
   }
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'category': category,
-      'audio': audio,
-      'filename': filename,
-      'array': array.map((azkar) => azkar.toJson()).toList(),
-    };
+
+  String get text => _text;
+
+  String get filename => _filename;
+
+  set filename(String value) {
+    _filename = value;
+  }
+
+  String get audio => _audio;
+
+  set audio(String value) {
+    _audio = value;
+  }
+
+  int get count => _count;
+
+  set count(int value) {
+    _count = value;
+  }
+
+  set text(String value) {
+    _text = value;
   }
 }
+
