@@ -30,16 +30,30 @@ Future<void> requestExactAlarmPermission() async {
   }
 }
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
 
   await NotificationService.init();
+
+  // 1. اطلب الإذن قبل أي إشعار
   await Permission.notification.request();
   await requestExactAlarmPermission(); // ⏰ مهم جدًا
 
+  // 2. تهيئة Android Alarm Manager
   await AndroidAlarmManager.initialize();
 
+  // 3. اختبار إشعار بعد 15 ثانية (بعد الإذن)
+  final now = tz.TZDateTime.now(tz.local);
+  await NotificationService.showScheduledNotification(
+    prayerName: "تجربة",
+    time: "${now.hour}:${now.minute}",
+    scheduledTime: now.add(const Duration(seconds: 15)),
+  );
+  print("🟢 تم جدولة إشعار الاختبار بعد 15 ثانية");
+
+  // 4. جدولة المهام اليومية
   final result = await AndroidAlarmManager.periodic(
     const Duration(hours: 24),
     1,
@@ -50,6 +64,8 @@ void main() async {
 
   if (!result) {
     debugPrint('❌ فشل جدولة المنبه اليومي');
+  } else {
+    debugPrint('✅ تم جدولة المنبه اليومي بنجاح');
   }
 
   runApp(const MyApp());

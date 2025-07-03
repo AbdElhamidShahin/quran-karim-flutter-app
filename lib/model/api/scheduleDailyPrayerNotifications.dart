@@ -1,17 +1,16 @@
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import '../../veiw_model/helper/Position/getPosition.dart' show getPosition;
 import 'NotificationService.dart';
 import 'apiServise.dart';
+import '../../veiw_model/helper/Position/getPosition.dart';
 
+@pragma('vm:entry-point') // ⬅️ هام جدًا
 Future<void> scheduleDailyPrayerNotifications() async {
   try {
+    tz.initializeTimeZones(); // ⬅️ لازم هنا كمان
     final position = await getPosition();
     final service = PrayerService();
-    final prayerTimes = await service.fetchPrayerTimes(
-      position.latitude,
-      position.longitude,
-    );
-
+    final prayerTimes = await service.fetchPrayerTimes(position.latitude, position.longitude);
     final now = tz.TZDateTime.now(tz.local);
 
     for (var entry in prayerTimes.entries) {
@@ -27,7 +26,7 @@ Future<void> scheduleDailyPrayerNotifications() async {
         now.day,
         hour,
         minute,
-      ).subtract(const Duration(seconds: 20)); // هامش أمان 10 ثواني
+      ).subtract(const Duration(seconds: 20));
 
       if (scheduleTime.isAfter(now)) {
         await NotificationService.showScheduledNotification(
@@ -38,6 +37,7 @@ Future<void> scheduleDailyPrayerNotifications() async {
       }
     }
 
+    print("📌 تم تنفيذ scheduleDailyPrayerNotifications");
     print("✅ إشعارات الصلوات تم جدولتها بنجاح");
   } catch (e) {
     print("❌ Error in scheduleDailyPrayerNotifications: $e");
