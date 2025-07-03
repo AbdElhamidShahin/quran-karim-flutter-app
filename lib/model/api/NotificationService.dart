@@ -2,7 +2,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _plugin =
+  FlutterLocalNotificationsPlugin();
 
   static Future<void> init() async {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -14,6 +15,7 @@ class NotificationService {
       'Prayer Notifications',
       description: 'Channel for prayer notifications',
       importance: Importance.max,
+      playSound: true,
     );
 
     await _plugin
@@ -25,8 +27,9 @@ class NotificationService {
     required String prayerName,
     required String time,
     required tz.TZDateTime scheduledTime,
+    int? id,
   }) async {
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = AndroidNotificationDetails(
       'prayer_channel',
       'Prayer Notifications',
       importance: Importance.max,
@@ -34,10 +37,10 @@ class NotificationService {
       playSound: true,
     );
 
-    const notificationDetails = NotificationDetails(android: androidDetails);
+    final notificationDetails = NotificationDetails(android: androidDetails);
 
     await _plugin.zonedSchedule(
-      prayerName.hashCode,
+      id ?? prayerName.hashCode,
       'موعد صلاة $prayerName',
       'حان الآن وقت صلاة $prayerName ($time)',
       scheduledTime,

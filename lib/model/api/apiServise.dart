@@ -24,20 +24,40 @@ class PrayerService {
 
     if (response.statusCode == 200) {
       final timings = response.data['data']['timings'] as Map<String, dynamic>;
-      return _parsePrayerTimes(timings);
+      return _parsePrayerTimes(timings, now); // نمرر now للدالة
     } else {
       throw Exception('Failed to fetch prayer times');
     }
   }
 
-  Map<String, String> _parsePrayerTimes(Map<String, dynamic> timings) {
-    return {
-      'الفجر': _formatTime(timings['Fajr']),
-      'الظهر': _formatTime(timings['Dhuhr']),
-      'العصر': _formatTime(timings['Asr']),
-      'المغرب': _formatTime(timings['Maghrib']),
-      'العشاء': _formatTime(timings['Isha']),
-    };
+  Map<String, String> _parsePrayerTimes(Map<String, dynamic> timings, DateTime now) {
+    // للاختبار: استخدام أوقات بعد دقائق من الآن
+    bool useTestTimes = true; // غير هذه القيمة لـ false عند الانتهاء من الاختبار
+
+    if (useTestTimes) {
+      return {
+        'الفجر': _formatTestTime(now, 1),
+        'الظهر': _formatTestTime(now, 2),
+        'العصر': _formatTestTime(now, 3),
+        'المغرب': _formatTestTime(now, 4),
+        'العشاء': _formatTestTime(now, 5),
+      };
+    } else {
+      // البيانات الحقيقية من API
+      return {
+        'الفجر': _formatTime(timings['Fajr']),
+        'الظهر': _formatTime(timings['Dhuhr']),
+        'العصر': _formatTime(timings['Asr']),
+        'المغرب': _formatTime(timings['Maghrib']),
+        'العشاء': _formatTime(timings['Isha']),
+      };
+    }
+  }
+
+  // دالة مساعدة لإنشاء أوقات اختبارية
+  String _formatTestTime(DateTime now, int minutesToAdd) {
+    final time = now.add(Duration(minutes: minutesToAdd));
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 
   String _formatTime(String timeStr) {

@@ -1,8 +1,13 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:quran_app/veiw/screens/HomePage.dart';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
+
+import '../../main.dart';
 import '../../model/api/scheduleDailyPrayerNotifications.dart';
+import 'HomePage.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -10,21 +15,41 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  Future<void> _checkAndRequestPermissions() async {
+    // طلب إذن الإشعارات
+    var notificationStatus = await Permission.notification.status;
+    if (!notificationStatus.isGranted) {
+      await Permission.notification.request();
+    }
+
+    // طلب إذن تحديد الموقع (إذا كنت تستخدمه)
+    var locationStatus = await Permission.location.status;
+    if (!locationStatus.isGranted) {
+      await Permission.location.request();
+    }
+
+    // طلب إذن التنبيهات الدقيقة لأندرويد 12+
+    if (Platform.isAndroid) {
+      const intent = AndroidIntent(
+        action: 'android.settings.REQUEST_SCHEDULE_EXACT_ALARM',
+        flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+      );
+      await intent.launch();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    scheduleDailyPrayerNotifications(); // ⏰ جدولة إشعارات اليوم الحالي
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      scheduleDailyPrayerNotifications();
-    });
-    Future.delayed(Duration.zero, () async {
-      await scheduleDailyPrayerNotifications(); // مهمة لمرة واحدة لتشغيل اليوم الحالي
-    });
-    Timer(Duration(seconds: 1), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+
+    _checkAndRequestPermissions().then((_) {
+      // الانتقال للصفحة الرئيسية بعد ثانيتين
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => HomePage())
+        );
+      });
     });
   }
 
@@ -32,11 +57,10 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SizedBox.expand(
-        // ياخد كل مساحة الشاشة
+      body: Center(
         child: Image.asset(
-          'assets/Image HomeScreen/logoApp.png',
-          fit: BoxFit.cover, // أو جرب BoxFit.fill لو عايز يضغط الصورة
+            'assets/Image HomeScreen/logoApp.png',
+            fit: BoxFit.cover
         ),
       ),
     );
