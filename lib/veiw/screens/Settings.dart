@@ -38,7 +38,7 @@ class Setings extends StatelessWidget {
               icon: Icons.star,
               title: 'تقييم التطبيق',
               onPressed: () {
-                _launchUrl("");
+                _launchUrl("https://play.google.com/store/apps/details?id=com.abdo.quranapp");
               },
             ),
             _buildSettingsOption(
@@ -47,7 +47,7 @@ class Setings extends StatelessWidget {
               title: 'مشاركة',
               onPressed: () {
                 Share.share(
-                  'https://play.google.com/store/apps/details?id=com.yourcompanyname.yourappname&fbclid=IwZXh0bgNhZW0CMTAAAR1zobhWeqLMCQDh_XmcPyNn7xHySVpG1MSrQs70NWFhZ_17bsnXV9936ls_aem_xXW5vyMyfUmyH9kifCQD1Q',
+                  'https://play.google.com/store/apps/details?id=com.abdo.quranapp',
                 );
               },
             ),

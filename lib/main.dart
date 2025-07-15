@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
-import 'model/api/scheduleDailyPrayerNotifications.dart';
-import 'veiw/screens/SplashScreen.dart';
 import 'model/api/NotificationService.dart';
+import 'veiw/screens/SplashScreen.dart';
 import 'model/api/apiServise.dart';
 import 'model/ItemProvider.dart';
 import 'model/bloc/bloc.dart';
 import 'veiw_model/helper/thems/ThemeProviderDarkMode.dart';
 import 'veiw_model/helper/thems/color.dart';
 
+import 'package:permission_handler/permission_handler.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
 
-  // Initialize notifications
+  // اطلب إذن الإشعارات
+  if (await Permission.notification.isDenied) {
+    await Permission.notification.request();
+  }
+
   await NotificationService.init();
-
-  // Schedule prayer notifications
-  await scheduleDailyPrayerNotifications();
 
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -34,9 +39,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ItemProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        BlocProvider(
-          create: (_) => PrayerBloc(PrayerService(), Connectivity()),
-        ),
+        BlocProvider(create: (_) => PrayerBloc(PrayerService(), Connectivity())),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

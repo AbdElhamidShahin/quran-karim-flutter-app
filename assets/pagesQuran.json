@@ -14383,55 +14383,55 @@
     }
   },
   {
-  "page": 596,
-  "image": {
-    "url": "assets/data/quran_image/596.png"
-  },
-  "start": {
-    "surah_number": 93,
-    "verse": 15,
-    "name": {
-      "ar": "الضحي",
-      "en": "The Night",
-      "transliteration": "Al-Dhuha"
+    "page": 596,
+    "image": {
+      "url": "assets/data/quran_image/596.png"
+    },
+    "start": {
+      "surah_number": 93,
+      "verse": 15,
+      "name": {
+        "ar": "الضحي",
+        "en": "The Night",
+        "transliteration": "Al-Dhuha"
+      }
+    },
+    "end": {
+      "surah_number": 93,
+      "verse": 8,
+      "name": {
+        "ar": "الضحي",
+        "en": "The Consolation",
+        "transliteration": "Ash-Dhuha"
+      }
     }
   },
-  "end": {
-    "surah_number": 93,
-    "verse": 8,
-    "name": {
-      "ar": "الضحي",
-      "en": "The Consolation",
-      "transliteration": "Ash-Dhuha"
-    }
-  }
-},
 
 
   {
-  "page": 596,
-  "image": {
-    "url": "assets/data/quran_image/596.png"
-  },
-  "start": {
-    "surah_number": 94,
-    "verse": 15,
-    "name": {
-      "ar": "الشرح",
-      "en": "The Night",
-      "transliteration": "Al-Sharh"
+    "page": 596,
+    "image": {
+      "url": "assets/data/quran_image/596.png"
+    },
+    "start": {
+      "surah_number": 94,
+      "verse": 15,
+      "name": {
+        "ar": "الشرح",
+        "en": "The Night",
+        "transliteration": "Al-Sharh"
+      }
+    },
+    "end": {
+      "surah_number": 94,
+      "verse": 8,
+      "name": {
+        "ar": "الشرح",
+        "en": "The Consolation",
+        "transliteration": "Ash-Sharh"
+      }
     }
   },
-  "end": {
-    "surah_number": 94,
-    "verse": 8,
-    "name": {
-      "ar": "الشرح",
-      "en": "The Consolation",
-      "transliteration": "Ash-Sharh"
-    }
-  }
-},
   {
     "page": 597,
     "image": {
@@ -14673,29 +14673,29 @@
     }
   },
   {
-  "page": 601,
-  "image": {
-    "url": "assets/data/quran_image/601.png"
-  },
-  "start": {
-    "surah_number": 105,
-    "verse": 1,
-    "name": {
-      "ar": "الفيل",
-      "en": "The Declining Day",
-      "transliteration": "Al-'Fil"
+    "page": 601,
+    "image": {
+      "url": "assets/data/quran_image/601.png"
+    },
+    "start": {
+      "surah_number": 105,
+      "verse": 1,
+      "name": {
+        "ar": "الفيل",
+        "en": "The Declining Day",
+        "transliteration": "Al-'Fil"
+      }
+    },
+    "end": {
+      "surah_number": 105,
+      "verse": 5,
+      "name": {
+        "ar": "الفيل",
+        "en": "The Elephant",
+        "transliteration": "Al-Fil"
+      }
     }
   },
-  "end": {
-    "surah_number": 105,
-    "verse": 5,
-    "name": {
-      "ar": "الفيل",
-      "en": "The Elephant",
-      "transliteration": "Al-Fil"
-    }
-  }
-},
 
 
 
@@ -14725,53 +14725,53 @@
     }
   },
   {
-  "page": 602,
-  "image": {
-    "url": "assets/data/quran_image/602.png"
-  },
-  "start": {
-    "surah_number": 107,
-    "verse": 1,
-    "name": {
-      "ar": "الماعون",
-      "en": "Quraysh",
-      "transliteration": "Ma'un"
+    "page": 602,
+    "image": {
+      "url": "assets/data/quran_image/602.png"
+    },
+    "start": {
+      "surah_number": 107,
+      "verse": 1,
+      "name": {
+        "ar": "الماعون",
+        "en": "Quraysh",
+        "transliteration": "Ma'un"
+      }
+    },
+    "end": {
+      "surah_number": 108,
+      "verse": 3,
+      "name": {
+        "ar": "الماعون",
+        "en": "Abundance",
+        "transliteration": "Al-Ma'un"
+      }
     }
   },
-  "end": {
-    "surah_number": 108,
-    "verse": 3,
-    "name": {
-      "ar": "الماعون",
-      "en": "Abundance",
-      "transliteration": "Al-Ma'un"
-    }
-  }
-},
   {
-  "page": 602,
-  "image": {
-    "url": "assets/data/quran_image/602.png"
-  },
-  "start": {
-    "surah_number": 108,
-    "verse": 1,
-    "name": {
-      "ar": "الكوثر",
-      "en": "Quraysh",
-      "transliteration": "Kawthar"
+    "page": 602,
+    "image": {
+      "url": "assets/data/quran_image/602.png"
+    },
+    "start": {
+      "surah_number": 108,
+      "verse": 1,
+      "name": {
+        "ar": "الكوثر",
+        "en": "Quraysh",
+        "transliteration": "Kawthar"
+      }
+    },
+    "end": {
+      "surah_number": 108,
+      "verse": 3,
+      "name": {
+        "ar": "الكوثر",
+        "en": "Abundance",
+        "transliteration": "Al-Kawthar"
+      }
     }
   },
-  "end": {
-    "surah_number": 108,
-    "verse": 3,
-    "name": {
-      "ar": "الكوثر",
-      "en": "Abundance",
-      "transliteration": "Al-Kawthar"
-    }
-  }
-},
   {
     "page": 603,
     "image": {
@@ -14798,53 +14798,53 @@
   },
 
   {
-  "page": 603,
-  "image": {
-    "url": "assets/data/quran_image/603.png"
-  },
-  "start": {
-    "surah_number": 110,
-    "verse": 1,
-    "name": {
-      "ar": "النصر",
-      "en": "The Disbelievers",
-      "transliteration": "Al-Nasr"
+    "page": 603,
+    "image": {
+      "url": "assets/data/quran_image/603.png"
+    },
+    "start": {
+      "surah_number": 110,
+      "verse": 1,
+      "name": {
+        "ar": "النصر",
+        "en": "The Disbelievers",
+        "transliteration": "Al-Nasr"
+      }
+    },
+    "end": {
+      "surah_number": 111,
+      "verse": 5,
+      "name": {
+        "ar": "النصر",
+        "en": "The Palm Fibre",
+        "transliteration": "Al-Nasr"
+      }
     }
   },
-  "end": {
-    "surah_number": 111,
-    "verse": 5,
-    "name": {
-      "ar": "النصر",
-      "en": "The Palm Fibre",
-      "transliteration": "Al-Nasr"
-    }
-  }
-},
   {
-  "page": 603,
-  "image": {
-    "url": "assets/data/quran_image/603.png"
-  },
-  "start": {
-    "surah_number": 111,
-    "verse": 1,
-    "name": {
-      "ar": "المسد",
-      "en": "The Disbelievers",
-      "transliteration": "Al-Masad"
+    "page": 603,
+    "image": {
+      "url": "assets/data/quran_image/603.png"
+    },
+    "start": {
+      "surah_number": 111,
+      "verse": 1,
+      "name": {
+        "ar": "المسد",
+        "en": "The Disbelievers",
+        "transliteration": "Al-Masad"
+      }
+    },
+    "end": {
+      "surah_number": 111,
+      "verse": 5,
+      "name": {
+        "ar": "المسد",
+        "en": "The Palm Fibre",
+        "transliteration": "Al-Masad"
+      }
     }
   },
-  "end": {
-    "surah_number": 111,
-    "verse": 5,
-    "name": {
-      "ar": "المسد",
-      "en": "The Palm Fibre",
-      "transliteration": "Al-Masad"
-    }
-  }
-},
   {
     "page": 604,
     "image": {
@@ -14894,27 +14894,27 @@
     }
   },
   {
-  "page": 604,
-  "image": {
-    "url": "assets/data/quran_image/604.png"
-  },
-  "start": {
-    "surah_number": 114,
-    "verse": 1,
-    "name": {
-      "ar": "الناس",
-      "en": "Sincerity",
-      "transliteration": "Al-Nas"
-    }
-  },
-  "end": {
-    "surah_number": 114,
-    "verse": 6,
-    "name": {
-      "ar": "الناس",
-      "en": "Mankind",
-      "transliteration": "An-Nas"
+    "page": 604,
+    "image": {
+      "url": "assets/data/quran_image/604.png"
+    },
+    "start": {
+      "surah_number": 114,
+      "verse": 1,
+      "name": {
+        "ar": "الناس",
+        "en": "Sincerity",
+        "transliteration": "Al-Nas"
+      }
+    },
+    "end": {
+      "surah_number": 114,
+      "verse": 6,
+      "name": {
+        "ar": "الناس",
+        "en": "Mankind",
+        "transliteration": "An-Nas"
+      }
     }
   }
-}
 ]
