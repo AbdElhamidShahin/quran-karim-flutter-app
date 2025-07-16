@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:lottie/lottie.dart';
-
 import '../../model/PrayerTime.dart';
-import '../../model/api/NotificationService.dart';
 import '../../model/bloc/bloc.dart';
 import '../../model/bloc/states.dart';
 import '../../veiw/wedgit/CustomAppBar.dart';
@@ -25,6 +24,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   Timer? _timer;
   Map<String, String> _prayerTimes = {};
   DateTime _lastPrayerUpdateDate = DateTime.now();
+  String cityName = 'جار التحميل...';
 
   @override
   void initState() {
@@ -48,10 +48,26 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       context.read<PrayerBloc>().add(
         FetchPrayerTimes(lat: position.latitude, lng: position.longitude),
       );
+      await _getCityNameFromCoordinates(position.latitude, position.longitude);
     } catch (_) {
       context.read<PrayerBloc>().add(
         FetchPrayerTimes(lat: 30.0444, lng: 31.2357),
       );
+    }
+  }
+
+  Future<void> _getCityNameFromCoordinates(double lat, double lng) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+      if (placemarks.isNotEmpty) {
+        setState(() {
+          cityName = placemarks.first.locality ?? 'غير معروف';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        cityName = 'غير معروف';
+      });
     }
   }
 
@@ -109,22 +125,25 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
           if (state is PrayerLoadingState) {
             return Center(child: buildLoadingShimmer());
           }
+
           if (state is PrayerLoadedState) {
             if (_prayerTimes != state.times) {
               _prayerTimes = state.times;
               WidgetsBinding.instance.addPostFrameCallback((_) {
-
                 _calculateNextPrayer();
                 _startTimer();
               });
             }
+
             return buildPrayerTimesUI(
               state.times,
               nextPrayerName,
               remainingTime,
-              false,
+              context,
+              cityName,
             );
           }
+
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

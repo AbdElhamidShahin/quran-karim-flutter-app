@@ -26,39 +26,43 @@ void main() async {
 
   await NotificationService.init();
 
-  runApp(const MyApp());
-}
-
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ItemProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        BlocProvider<PrayerBloc>(
+          create: (_) => PrayerBloc(PrayerService(), Connectivity()),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ItemProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        BlocProvider(create: (_) => PrayerBloc(PrayerService(), Connectivity())),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'تطبيق القرآن',
-        themeMode: ThemeMode.system,
-        theme: ThemeData(
-          fontFamily: 'Poppins',
-          brightness: Brightness.light,
-          scaffoldBackgroundColor: backgroundColor(context),
-        ),
-        darkTheme: ThemeData(
-          fontFamily: 'Poppins',
-          brightness: Brightness.dark,
-          scaffoldBackgroundColor: const Color(0xFF121B22),
-        ),
-        home: Directionality(
-          textDirection: TextDirection.rtl,
-          child: SplashScreen(),
-        ),
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
+    return MaterialApp(
+      title: 'تطبيق القرآن',
+      debugShowCheckedModeBanner: false,
+      themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      theme: ThemeData(
+        fontFamily: 'Poppins',
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: backgroundColor(context),
+      ),
+      darkTheme: ThemeData(
+        fontFamily: 'Poppins',
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF121B22),
+      ),
+      home: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SplashScreen(),
       ),
     );
   }

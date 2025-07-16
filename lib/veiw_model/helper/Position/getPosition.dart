@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 Future<Position> getPosition() async {
@@ -17,4 +19,17 @@ Future<Position> getPosition() async {
   }
 
   return await Geolocator.getCurrentPosition();
+}
+
+Future<String> getCityName(double lat, double lng) async {
+  try {
+    List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+    if (placemarks.isNotEmpty) {
+      return placemarks.first.locality ?? "مدينة غير معروفة";
+    }
+    return "مدينة غير معروفة";
+  } catch (e) {
+    debugPrint("خطأ في جلب اسم المدينة: $e");
+    return "مدينة غير معروفة";
+  }
 }

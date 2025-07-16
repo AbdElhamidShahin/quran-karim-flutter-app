@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
@@ -8,6 +9,12 @@ class NotificationService {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: android);
     await _plugin.initialize(initSettings);
+
+    // ✅ اطلب إذن الإشعارات لأندرويد 13+
+    if (await Permission.notification.isDenied) {
+      final result = await Permission.notification.request();
+      print("🔔 Notification permission status: $result");
+    }
 
     const channel = AndroidNotificationChannel(
       'prayer_channel',
@@ -20,7 +27,6 @@ class NotificationService {
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
   }
-
   static Future<void> showScheduledNotification({
     required String prayerName,
     required String time,

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quran_app/veiw/screens/azkarPage.dart';
 import 'package:quran_app/veiw/wedgit/CustomContainer.dart';
 
+import '../../model/PrayerTime.dart';
+import '../../model/bloc/bloc.dart';
+import '../../veiw_model/helper/Position/getPosition.dart';
 import '../../veiw_model/helper/thems/color.dart';
 import '../screens/My_QuranPage.dart';
 import '../screens/PrayerTimesScreen.dart';
@@ -15,38 +19,39 @@ class Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [        SizedBox(
-        child: Column(
-          children: [
-            CustomContainer(
-              height1: height * .2,
-              image: 'assets/Image HomeScreen/unnamed.png',
-              title: "المسبحه",
-              color: qiblaColor,
-              onpressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SephaScreen()),
-                );
-              },
-            ),
-            CustomContainer(
-              height1: height * .27,
-              image: 'assets/Image HomeScreen/islam_14415965.png',
-              title: "أذكار الصباح والمساء",
-              color: lastReadingColor,
-              onpressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AzkarPage()),
-                );
-              },
-            ),
-          ],
+      children: [
+        SizedBox(
+          child: Column(
+            children: [
+              CustomContainer(
+                height1: height * .2,
+                image: 'assets/Image HomeScreen/unnamed.png',
+                title: "المسبحه",
+                color: qiblaColor,
+                onpressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SephaScreen()),
+                  );
+                },
+              ),
+              CustomContainer(
+                height1: height * .27,
+                image: 'assets/Image HomeScreen/islam_14415965.png',
+                title: "أذكار الصباح والمساء",
+                color: lastReadingColor,
+                onpressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AzkarPage()),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
-      ),
-
-        Spacer(),        SizedBox(
+        Spacer(),
+        SizedBox(
           child: Column(
             children: [
               CustomContainer(
@@ -66,17 +71,31 @@ class Dashboard extends StatelessWidget {
                 image: 'assets/Image HomeScreen/sujud_15044855.png',
                 title: "مواقيت الصلاه",
                 color: azkarColor,
-                onpressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PrayerTimesScreen()),
-                  );
+                onpressed: () async {
+                  try {
+                    final position = await getPosition(); // استخدام دالتك
+
+                    context.read<PrayerBloc>().add(FetchPrayerTimes(
+                        lat: position.latitude, lng: position.longitude));
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PrayerTimesScreen()),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("error"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 },
               ),
             ],
           ),
         ),
-
       ],
     );
   }

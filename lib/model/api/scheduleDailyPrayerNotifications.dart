@@ -43,7 +43,7 @@ Future<void> scheduleDailyPrayerNotifications() async {
 
       print("🔔 [$name] الوقت المجدول: $scheduleTime | الفرق بالدقائق: $diff");
 
-      if (diff >= -10) {
+      if (scheduleTime.isAfter(now)) {
         await NotificationService.showScheduledNotification(
           prayerName: name,
           time: cleanTime,

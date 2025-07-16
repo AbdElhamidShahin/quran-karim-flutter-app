@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // جدولة الإشعارات بعد الدخول
     if (!isScheduled) {
       unawaited(scheduleDailyPrayerNotifications());
-      await prefs.setBool('notificationsScheduled', true);
+      // await prefs.setBool('notificationsScheduled', true);
     }
 
     // إشعار اختبار بعد 10 ثواني (اختياري)
