@@ -1,61 +1,38 @@
-import 'package:timezone/timezone.dart' as tz;
-import '../../veiw_model/helper/Position/getPosition.dart' show getPosition;
-import 'NotificationService.dart';
-import 'apiServise.dart';
-int fixHour(String prayerName, int hour) {
-  if (prayerName == 'الفجر') return hour;
-  return hour < 12 ? hour + 12 : hour;
-}
-Future<void> scheduleDailyPrayerNotifications() async {
-  try {
-    final position = await getPosition();
-    final service = PrayerService();
-    final prayerTimes = await service.fetchPrayerTimes(
-      position.latitude,
-      position.longitude,
-    );
+import 'dart:convert';
 
-    final now = tz.TZDateTime.now(tz.local);
+import 'package:shared_preferences/shared_preferences.dart';
 
-    print("🕌 أوقات الصلاة اليوم:");
-    prayerTimes.forEach((key, value) => print("👉 $key: $value"));
+class LocalStorageHelper {
+  static const String _prayerTimesKey = 'prayer_times';
+  static const String _lastUpdateKey = 'last_update';
 
-    for (var entry in prayerTimes.entries) {
-      final name = entry.key;
-      final cleanTime = entry.value.trim().split(' ').first;
-      final timeParts = cleanTime.split(':');
-      int? rawHour = int.tryParse(timeParts[0]);
-      int? minute = int.tryParse(timeParts[1]);
+  static Future<void> savePrayerTimes(Map<String, String> times) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_prayerTimesKey, json.encode(times));
+    await prefs.setString(_lastUpdateKey, DateTime.now().toIso8601String());
+  }
 
-      if (rawHour == null || minute == null) continue;
+  static Future<Map<String, String>> loadPrayerTimes() async {
+    final prefs = await SharedPreferences.getInstance();
+    final timesJson = prefs.getString(_prayerTimesKey);
+    final lastUpdate = prefs.getString(_lastUpdateKey);
 
-      final hour = fixHour(name, rawHour);
-
-      final scheduleTime = tz.TZDateTime.local(
-        now.year,
-        now.month,
-        now.day,
-        hour,
-        minute,
-      ).subtract(Duration(minutes: 5));
-
-      final diff = scheduleTime.difference(now).inMinutes;
-
-      print("🔔 [$name] الوقت المجدول: $scheduleTime | الفرق بالدقائق: $diff");
-
-      if (scheduleTime.isAfter(now)) {
-        await NotificationService.showScheduledNotification(
-          prayerName: name,
-          time: cleanTime,
-          scheduledTime: scheduleTime,
-        );
-      } else {
-        print("⏩ تخطي $name لأنه عدّى عليه أكتر من دقيقة");
+    // إذا مر أكثر من يوم على آخر تحديث، نعيد بيانات فارغة
+    if (lastUpdate != null) {
+      final lastDate = DateTime.parse(lastUpdate);
+      if (DateTime.now().difference(lastDate) > Duration(days: 1)) {
+        return {};
       }
     }
 
-    print("✅ إشعارات الصلوات تم جدولتها بنجاح");
-  } catch (e) {
-    print("❌ خطأ في scheduleDailyPrayerNotifications: $e");
+    return timesJson != null
+        ? Map<String, String>.from(json.decode(timesJson))
+        : {};
+  }
+
+  static Future<void> clearOldData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_prayerTimesKey);
+    await prefs.remove(_lastUpdateKey);
   }
 }

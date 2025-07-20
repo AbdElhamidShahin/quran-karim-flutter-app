@@ -69,7 +69,7 @@ Widget buildPrayerTimesUI(
               child: Divider(color: Colors.grey, thickness: 1, endIndent: 10),
             ),
             Text(
-              'المدينة: $cityName',
+              ' $cityName :المدينة ',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const Expanded(

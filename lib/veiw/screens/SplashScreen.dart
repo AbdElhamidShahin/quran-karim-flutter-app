@@ -1,44 +1,134 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:quran_app/veiw/screens/HomePage.dart';
-import 'package:timezone/timezone.dart' as tz;
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../model/api/NotificationService.dart';
+import '../../model/api/apiServise.dart'; // هذا يحتوي على PrayerService
 import '../../model/api/scheduleDailyPrayerNotifications.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'HomePage.dart';
 
 class SplashScreen extends StatefulWidget {
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
+  const SplashScreen({super.key});
 
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _initApp();
+    _initializeApp();
   }
 
-  Future<void> _initApp() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool isScheduled = prefs.getBool('notificationsScheduled') ?? false;
+  Future<void> _initializeApp() async {
+    try {
+      // 1. التحقق من إذن الموقع
+      final hasLocationPermission = await _checkLocationPermission();
+      if (!hasLocationPermission) return;
 
-    // انتقال سريع للصفحة الرئيسية
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    );
+      // 2. الحصول على الموقع الحالي
+      final position = await _getCurrentPosition();
 
-    // جدولة الإشعارات بعد الدخول
-    if (!isScheduled) {
-      unawaited(scheduleDailyPrayerNotifications());
-      // await prefs.setBool('notificationsScheduled', true);
+      // 3. جلب مواقيت الصلاة
+      final prayerTimes = await _fetchPrayerTimes(position);
+
+      // 4. جدولة الإشعارات
+      await _scheduleNotifications(prayerTimes);
+
+      // 5. الانتقال للصفحة الرئيسية
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomePage()),
+      );
+    } catch (e) {
+      _handleError(e);
     }
+  }
 
-    // إشعار اختبار بعد 10 ثواني (اختياري)
-    await NotificationService.showScheduledNotification(
-      prayerName: "اختبار",
-      time: "الآن",
-      scheduledTime: tz.TZDateTime.now(tz.local).add(Duration(seconds: 5)),
+  Future<bool> _checkLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        _showLocationPermissionDialog();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  Future<Position> _getCurrentPosition() async {
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      throw 'خدمة الموقع غير مفعلة';
+    }
+    return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+  }
+
+  Future<Map<String, String>> _fetchPrayerTimes(Position position) async {
+    try {
+      final prayerService = PrayerService();
+      final times = await prayerService.fetchPrayerTimes(
+        position.latitude,
+        position.longitude,
+      );
+      await LocalStorageHelper.savePrayerTimes(times);
+      return times;
+    } catch (e) {
+      final cachedTimes = await LocalStorageHelper.loadPrayerTimes();
+      if (cachedTimes.isEmpty) throw 'لا يوجد اتصال بالإنترنت ولا توجد بيانات مخزنة';
+      return cachedTimes;
+    }
+  }
+
+  Future<void> _scheduleNotifications(Map<String, String> prayerTimes) async {
+    await NotificationService.init();
+    await NotificationService.schedulePrayerNotifications(prayerTimes);
+  }
+
+  void _showLocationPermissionDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('إذن الموقع مطلوب'),
+        content: const Text(
+            'يحتاج التطبيق إلى إذن الموقع لتحديد مواقيت الصلاة الدقيقة.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () => openAppSettings(),
+            child: const Text('فتح الإعدادات'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleError(dynamic error) {
+    print('خطأ في التهيئة: $error');
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('حدث خطأ'),
+        content: Text(error.toString()),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _initializeApp();
+            },
+            child: const Text('إعادة المحاولة'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -46,11 +136,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SizedBox.expand(
-        child: Image.asset(
-          'assets/Image HomeScreen/logoApp.png',
-          fit: BoxFit.cover,
-        ),
+      body: Center(
+        child: Image.asset('assets/Image HomeScreen/logoApp.png'),
       ),
     );
   }

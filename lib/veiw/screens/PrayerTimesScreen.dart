@@ -29,17 +29,15 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchAndStart();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchData();
+    });
   }
 
   @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
-  }
-
-  void _fetchAndStart() {
-    _fetchData();
   }
 
   Future<void> _fetchData() async {
@@ -115,26 +113,22 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: 'مواقيت الصلاة'),
-      body: BlocBuilder<PrayerBloc, PrayerState>(
+      body: BlocConsumer<PrayerBloc, PrayerState>(
+        listener: (context, state) {
+          if (state is PrayerLoadedState) {
+            _prayerTimes = state.times;
+            _calculateNextPrayer();
+            _startTimer();
+          }
+        },
         builder: (context, state) {
           if (state is PrayerLoadingState) {
             return Center(child: buildLoadingShimmer());
-          }
-
-          if (state is PrayerLoadedState) {
-            if (_prayerTimes != state.times) {
-              _prayerTimes = state.times;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _calculateNextPrayer();
-                _startTimer();
-              });
-            }
-
+          } else if (state is PrayerLoadedState) {
             return buildPrayerTimesUI(
               state.times,
               nextPrayerName,
@@ -142,25 +136,31 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
               context,
               cityName,
             );
+          } else if (state is PrayerErrorState) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset(
+                    'assets/Animation - 1745055052923.json',
+                    width: 200,
+                    height: 200,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'فشل في جلب البيانات، حاول لاحقًا',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  ElevatedButton(
+                    onPressed: _fetchData,
+                    child: const Text('إعادة المحاولة'),
+                  ),
+                ],
+              ),
+            );
           }
 
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Lottie.asset(
-                  'assets/Animation - 1745055052923.json',
-                  width: 200,
-                  height: 200,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'فشل في جلب البيانات، حاول لاحقًا',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-          );
+          return Center(child: buildLoadingShimmer());
         },
       ),
     );
