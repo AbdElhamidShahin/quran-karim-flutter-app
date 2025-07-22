@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../../model/azkarModel/SearchScreenAzkar.dart';
 import '../../veiw_model/helper/thems/TextStyle.dart';
 import '../../veiw_model/helper/thems/color.dart';
 
 class CustomSearchscreen extends StatelessWidget {
-  const CustomSearchscreen({super.key, required this.text, required this.ontap});
-final String text
-  ;
-final VoidCallback ontap;
+  const CustomSearchscreen({
+    super.key,
+    required this.text,
+    required this.ontap,
+  });
+  final String text;
+  final VoidCallback ontap;
   @override
   Widget build(BuildContext context) {
-    return           Container(
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -27,7 +28,7 @@ final VoidCallback ontap;
       ),
       child: TextField(
         textDirection:
-        TextDirection.rtl, // تحديد اتجاه الكتابة من اليمين لليسار
+            TextDirection.rtl,
         keyboardType: TextInputType.text,
         inputFormatters: [
           FilteringTextInputFormatter.allow(
@@ -41,14 +42,12 @@ final VoidCallback ontap;
           hintStyle: selectedAyahStyle(),
           prefixIcon: const Icon(Icons.search, color: primaryDark),
           prefixIconConstraints: BoxConstraints(
-            minWidth: 40, // يمكنك تعديل الحجم حسب الحاجة
+            minWidth: 40,
           ),
         ),
-        textAlign: TextAlign.right, // جعل النص يبدأ من اليمين
-        onTap: ontap
-
+        textAlign: TextAlign.right,
+        onTap: ontap,
       ),
     );
-
   }
 }

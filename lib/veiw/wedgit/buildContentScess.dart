@@ -46,22 +46,18 @@ Widget buildContentSuccess(
         body: Column(
           children: [
             SizedBox(height: 32),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0),
-              child: Image.asset(
-                color: colorQuranPages(context),
-                page.imageUrl,
-                width: double.infinity,
-                fit: BoxFit.fitWidth,
+            Image.asset(
+              color: colorQuranPages(context),
+              page.imageUrl,
+              width: MediaQuery.of(context).size.width*.99,
 
-                errorBuilder:
-                    (ctx, err, _) => Container(
-                      color: Colors.grey[200],
-                      child: const Center(
-                        child: Icon(Icons.image_not_supported),
-                      ),
+              errorBuilder:
+                  (ctx, err, _) => Container(
+                    color: Colors.grey[200],
+                    child: const Center(
+                      child: Icon(Icons.image_not_supported),
                     ),
-              ),
+                  ),
             ),
           ],
         ),

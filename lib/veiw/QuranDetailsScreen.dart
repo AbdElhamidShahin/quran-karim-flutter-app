@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/item.dart';
 import '../model/JsonScreen.dart';
-import '../veiw_model/helper/thems/TextStyle.dart';
-import '../veiw_model/helper/thems/color.dart';
 import 'wedgit/buildLoadingShimmer.dart';
 import 'wedgit/buildEmptyWidget.dart';
 import 'wedgit/buildContentScess.dart';

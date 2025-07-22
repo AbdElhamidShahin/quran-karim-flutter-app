@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:lottie/lottie.dart';
 import '../../model/PrayerTime.dart';
 import '../../model/bloc/bloc.dart';
 import '../../model/bloc/states.dart';
@@ -10,6 +9,7 @@ import '../../veiw/wedgit/CustomAppBar.dart';
 import '../../veiw/wedgit/buildLoadingShimmer.dart';
 import '../../veiw/wedgit/buildPrayerTimesUI.dart';
 import '../../veiw_model/helper/Position/getPosition.dart';
+import '../wedgit/buildErrorWidget.dart';
 
 class PrayerTimesScreen extends StatefulWidget {
   const PrayerTimesScreen({Key? key}) : super(key: key);
@@ -113,13 +113,15 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: 'مواقيت الصلاة'),
       body: BlocConsumer<PrayerBloc, PrayerState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is PrayerLoadedState) {
+
             _prayerTimes = state.times;
             _calculateNextPrayer();
             _startTimer();
@@ -137,27 +139,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
               cityName,
             );
           } else if (state is PrayerErrorState) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Lottie.asset(
-                    'assets/Animation - 1745055052923.json',
-                    width: 200,
-                    height: 200,
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'فشل في جلب البيانات، حاول لاحقًا',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  ElevatedButton(
-                    onPressed: _fetchData,
-                    child: const Text('إعادة المحاولة'),
-                  ),
-                ],
-              ),
-            );
+            return buildErrorWidget('فشل في جلب البيانات، حاول لاحقًا');
           }
 
           return Center(child: buildLoadingShimmer());

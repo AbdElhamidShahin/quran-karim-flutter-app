@@ -12,10 +12,10 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState> {
   final Connectivity connectivity;
 
   PrayerBloc(this.prayerService, this.connectivity) : super(PrayerInitial()) {
-    on<FetchPrayerTimes>(_onFetchPrayerTimes);
+    on<FetchPrayerTimes>(onFetchPrayerTimes);
   }
 
-  Future<void> _onFetchPrayerTimes(
+  Future<void> onFetchPrayerTimes(
     FetchPrayerTimes event,
     Emitter<PrayerState> emit,
   ) async {
@@ -28,8 +28,10 @@ class PrayerBloc extends Bloc<PrayerEvent, PrayerState> {
     }
 
     try {
-      final timings =
-          await prayerService.fetchPrayerTimes(event.lat, event.lng);
+      final timings = await prayerService.fetchPrayerTimes(
+        event.lat,
+        event.lng,
+      );
 
       emit(PrayerLoadedState(timings));
     } catch (e) {
