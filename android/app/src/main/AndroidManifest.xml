@@ -1,74 +1,42 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.abdo.quranapp">-- أذونات الموقع -->
-    <!-- أذونات الموقع -->
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.abdo.quranapp">
+    <!--  الموقع الجغرافي لمواقيت الصلاة  -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-    <!-- إذن تشغيل الصوت (مهم للتطبيقات الصوتية/الموسيقى) -->
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-    <!-- إذا كنت تستخدم الإنترنت لبث الصوت -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <!--  الإنترنت والشبكة  -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!--  الإشعارات والتنبيهات  -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
-
-    <!-- أذونات الإنترنت -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-
-    <application
-        android:label="قرآننا"
-        android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
-
-        <receiver
-            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
-            android:enabled="true"
-            android:exported="false">
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <!--  الصوت  -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <!--  الخدمة التي تعمل في الخلفية (لأذان التنبيه)  -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <application android:label="قرآننا" android:name="${applicationName}" android:icon="@mipmap/ic_launcher" android:usesCleartextTraffic="false">
+        <!--  مستقبل إعادة تشغيل الإشعارات المجدولة بعد الـ reboot  -->
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver" android:enabled="true" android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
             </intent-filter>
         </receiver>
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:launchMode="singleTop"
-            android:taskAffinity=""
-            android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-            android:hardwareAccelerated="true"
-            android:usesCleartextTraffic="true"
-            android:requestLegacyExternalStorage="true"
-            android:windowSoftInputMode="adjustResize">
-
-            <!-- تحديد الثيم الخاص بالتطبيق -->
-            <meta-data
-                android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@style/NormalTheme"
-                />
+        <!--  مستقبل android_alarm_manager_plus  -->
+        <receiver android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmBroadcastReceiver" android:exported="false"/>
+        <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTop" android:taskAffinity="" android:theme="@style/LaunchTheme" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:hardwareAccelerated="true" android:windowSoftInputMode="adjustResize">
+            <meta-data android:name="io.flutter.embedding.android.NormalTheme" android:resource="@style/NormalTheme"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <!-- لا تحذف هذا الـ meta-data -->
-        <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
+        <!--  لا تحذف هذا الـ meta-data  -->
+        <meta-data android:name="flutterEmbedding" android:value="2"/>
     </application>
-
-    <!-- الصلاحيات المطلوبة لاستعلام الأنشطة التي يمكنها معالجة النص -->
+    <!--  الصلاحيات المطلوبة لاستعلام الأنشطة التي يمكنها معالجة النص  -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
