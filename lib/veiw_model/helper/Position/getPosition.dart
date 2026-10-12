@@ -33,3 +33,26 @@ Future<String> getCityName(double lat, double lng) async {
     return "مدينة غير معروفة";
   }
 }
+Future<bool> showLocationDisclosureDialog(BuildContext context) async {
+  return await showDialog<bool>(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => AlertDialog(
+      title: Text("الوصول إلى الموقع"),
+      content: Text(
+          "يحتاج التطبيق لتحديد موقعك بدقة من أجل عرض مواقيت الصلاة في مدينتك. "
+              "لن يتم استخدام بيانات الموقع لأي غرض آخر."
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: Text("رفض"),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: Text("موافق"),
+        ),
+      ],
+    ),
+  ) ?? false;
+}

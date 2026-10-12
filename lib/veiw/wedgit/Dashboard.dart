@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:quran_app/veiw/screens/azkarPage.dart';
 import 'package:quran_app/veiw/wedgit/CustomContainer.dart';
 import '../../model/PrayerTime.dart';
@@ -70,32 +71,41 @@ class Dashboard extends StatelessWidget {
                 image: 'assets/Image HomeScreen/sujud_15044855.png',
                 title: "مواقيت الصلاه",
                 color: azkarColor,
-                onpressed: () async {
-                  try {
-                    final position = await getPosition();
+                  onpressed: () async {
+                    // تحقق لو الإذن موجود بالفعل
+                    LocationPermission permission = await Geolocator.checkPermission();
+                    if (permission == LocationPermission.denied ||
+                        permission == LocationPermission.deniedForever) {
+                      // أول مرة → اعرض الرسالة التوضيحية
+                      bool consent = await showLocationDisclosureDialog(context);
+                      if (!consent) return;
+                    }
 
-                    context.read<PrayerBloc>().add(
-                      FetchPrayerTimes(
-                        lat: position.latitude,
-                        lng: position.longitude,
-                      ),
-                    );
+                    try {
+                      final position = await getPosition();
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PrayerTimesScreen(),
-                      ),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text("error"),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
+                      context.read<PrayerBloc>().add(
+                        FetchPrayerTimes(
+                          lat: position.latitude,
+                          lng: position.longitude,
+                        ),
+                      );
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PrayerTimesScreen(),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(e.toString()),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   }
-                },
               ),
             ],
           ),
