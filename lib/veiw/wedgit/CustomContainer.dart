@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:quran_app/veiw/wedgit/GotoWidget.dart';
-
 import '../../veiw_model/helper/thems/TextStyle.dart';
+import '../../veiw_model/helper/thems/color.dart';
 
-
+/// Feature card on the Home screen.
+/// Uses a consistent white/light surface regardless of which feature it shows.
 class CustomContainer extends StatelessWidget {
   const CustomContainer({
     Key? key,
@@ -18,64 +18,67 @@ class CustomContainer extends StatelessWidget {
   final String image;
   final String title;
   final VoidCallback? onpressed;
-  final Color color;
+  final Color color; // kept for caller compatibility but used subtly
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
-      padding: EdgeInsets.only(top: width * .06),
+      padding: EdgeInsets.only(top: width * .04),
       child: GestureDetector(
         onTap: onpressed,
         child: Container(
           height: height1,
-          width: width * .4,
+          width: width * .42,
           decoration: BoxDecoration(
+            color: isDark ? surfaceDark : surfaceColor,
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 5,
-                blurRadius: 7,
-                offset: Offset(1.5, 3), // changes position of shadow
+                color: primaryColor.withOpacity(isDark ? 0.15 : 0.10),
+                spreadRadius: 0,
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
             ],
-            image: const DecorationImage(
-              image: AssetImage('assets/icons/dashboard.png'),
-              fit: BoxFit.fill,
+            // Subtle left border accent in the card's feature color
+            border: Border(
+              right: BorderSide(color: primaryColor.withOpacity(0.35), width: 3),
             ),
-            borderRadius: BorderRadius.circular(25),
           ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(25),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: width * .04,
+              horizontal: width * .035,
             ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: height * .02,
-                horizontal: width * .02,
-              ),
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image(
-                    image: AssetImage(image),
-                    width: width * .15,
-                    height: height * .07,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Feature icon
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  Spacer(),
-                  Padding(
-                    padding: EdgeInsets.only(left: width * .02),
-                    child: Text(title, style: sectionHeaderStyle()),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Image.asset(image, fit: BoxFit.contain),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(left: width * .02),
-                    child: GotoWidget(),
-                  ),
-                ],
-              ),
+                ),
+                const Spacer(),
+                Text(title, style: sectionHeaderStyle()),
+                const SizedBox(height: 4),
+                // Subtle "tap" cue — just a small arrow, no text
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: primaryColor.withOpacity(0.6),
+                  size: 13,
+                ),
+              ],
             ),
           ),
         ),

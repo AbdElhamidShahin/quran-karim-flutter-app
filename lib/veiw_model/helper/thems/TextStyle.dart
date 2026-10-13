@@ -1,148 +1,119 @@
 import 'package:flutter/material.dart';
 import 'color.dart';
 
-  // 1. اسم السورة بالعربي (مصمم للعناوين الكبيرة)
-   TextStyle surahNameArStyle() {
-    return TextStyle(
+// ─── Surah name (Arabic, for list headings) ────────────────────────────────────
+TextStyle surahNameArStyle() => const TextStyle(
       fontFamily: 'Lalezar',
-      fontSize: 26,
+      fontSize: 22,
       fontWeight: FontWeight.w500,
-      color: textPrimary, // تم التغيير إلى textPrimary
-      letterSpacing: 0.5,
+      color: textPrimary,
+      letterSpacing: 0.3,
     );
-  }
 
-  // 2. اسم السورة بالإنجليزي (نص مساعد)
-   TextStyle surahNameEnStyle() {
-    return TextStyle(
+// ─── Surah transliteration / English ──────────────────────────────────────────
+TextStyle surahNameEnStyle() => const TextStyle(
       fontFamily: 'Roboto',
       fontSize: 14,
       fontWeight: FontWeight.w500,
-      color: textSecondary, // تم التغيير إلى textSecondary
+      color: textSecondary,
       letterSpacing: 0.3,
     );
-  }
 
-  // 3. عدد الآيات (معلومات إضافية)
-   TextStyle ayahCountStyle() {
-    return TextStyle(
+// ─── Verse / ayah count chip ───────────────────────────────────────────────────
+TextStyle ayahCountStyle() => const TextStyle(
       fontFamily: 'Cairo',
       fontSize: 13,
-      color: textDisabled, // تم التغيير إلى textDisabled
+      color: textDisabled,
     );
-  }
 
-  // 4. الخط الرئيسي للنصوص العامة
-   TextStyle appBodyStyle() {
-    return const TextStyle(
-      fontFamily: 'Cairo',
-      fontSize: 16,
-      height: 1.6,
-      color: primaryDark, // تم التغيير إلى textPrimary
-    );
-  }
-
-  // 5. عنوان AppBar (بارز ولكن ليس صارخاً)
-   TextStyle appBarTitleStyle() {
-    return TextStyle(
-      fontFamily: 'Lalezar',
-      fontSize: 26,
-      color: primaryColor, // تم التغيير إلى primaryColor
-      letterSpacing: 1.0,
-    );
-  }
-
-  // 6. عناوين الأقسام الرئيسية
-   TextStyle sectionHeaderStyle() {
-    return TextStyle(
-      fontFamily: 'Cairo',
-      fontSize: 18,
-      fontWeight: FontWeight.w600,
-      color: primaryDark, // تم التغيير إلى primaryDark
-      height: 1.4,
-    );
-  }
-
-  // 7. نصوص الأزرار (واضحة ومقروءة)
-   TextStyle buttonTextStyle() {
-    return const TextStyle(
-      fontFamily: 'Cairo',
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-      color: textSecondary,
-      letterSpacing: 0.5,
-    );
-  }
-
-  // 8. نصوص الترجمة (مريحة للقراءة الطويلة)
-
-
-  // 9. رقم السورة في الدائرة (بارز ولكن متناسق)
-   TextStyle surahNumberCircleStyle() {
-    return TextStyle(
-      fontFamily: 'Cairo',
-      fontSize: 22,
-      fontWeight: FontWeight.w500,
-      color: Colors.black,
-    );
-  }
-
-  // 10. خط المصحف العثماني (مخصص لآيات القرآن)
-   TextStyle quranAyahStyle() {
-    return  TextStyle(
-      fontSize: 50,
-      fontWeight: FontWeight.bold,
-      height: 2.2,
-      color: textPrimary, // تم التغيير إلى textPrimary
-    );
-  }
-
-  // 11. نص الآية عند التحديد (إضافة جديدة)
-   TextStyle selectedAyahStyle() {
-    return TextStyle(
-      fontFamily: 'Lalezar',
-      fontSize: 20,
-      fontWeight: FontWeight.w500,
-      height: 1.8,
-      color: primaryDark, // تم التغيير إلى primaryColor
-    );
-  }
-
-  // 12. نص تفسير الآيات (إضافة جديدة)
-   TextStyle tafsirTextStyle() {
-    return TextStyle(
+// ─── General body text ─────────────────────────────────────────────────────────
+TextStyle appBodyStyle() => const TextStyle(
       fontFamily: 'Cairo',
       fontSize: 15,
-      height: 1.8,
-      color: textPrimary.withOpacity(0.9), // تم التغيير إلى textPrimary
-    );
-  }
-
-  // 13. أسلوب خاص بعلامات السجود (إضافة جديدة)
-   TextStyle sajdaMarkerStyle() {
-    return TextStyle(
-      fontFamily: 'Cairo',
-      fontSize: 18,
-      fontWeight: FontWeight.w700,
-      color: primaryColor // تم التغيير إلى primaryColor
-    );
-  }
-
-  // 14. أسلوب خاص بأرقام الأجزاء (إضافة جديدة)
-   TextStyle juzNumberStyle() {
-    return TextStyle(
-      fontFamily: 'Roboto',
-      fontSize: 32,
-      fontWeight: FontWeight.bold,
-
+      height: 1.6,
       color: primaryDark,
     );
-  }
-TextStyle SttingsTextStyle() {
-  return TextStyle(
-    fontFamily: 'Cairo',
-    fontSize: 20,
-fontWeight: FontWeight.w600,
-    color: primaryDark
-  );
-}
+
+// ─── AppBar title ──────────────────────────────────────────────────────────────
+TextStyle appBarTitleStyle() => const TextStyle(
+      fontFamily: 'Lalezar',
+      fontSize: 24,
+      color: primaryColor,
+      letterSpacing: 0.8,
+    );
+
+// ─── Section header ────────────────────────────────────────────────────────────
+TextStyle sectionHeaderStyle() => const TextStyle(
+      fontFamily: 'Cairo',
+      fontSize: 17,
+      fontWeight: FontWeight.w600,
+      color: primaryDark,
+      height: 1.4,
+    );
+
+// ─── Button / label text ───────────────────────────────────────────────────────
+TextStyle buttonTextStyle() => const TextStyle(
+      fontFamily: 'Cairo',
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      color: textSecondary,
+      letterSpacing: 0.3,
+    );
+
+// ─── Surah number inside circle ────────────────────────────────────────────────
+TextStyle surahNumberCircleStyle() => const TextStyle(
+      fontFamily: 'Cairo',
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: primaryDark,
+    );
+
+// ─── Quran image-page display (not text rendering — images are used) ───────────
+TextStyle quranAyahStyle() => const TextStyle(
+      fontSize: 40,
+      fontWeight: FontWeight.bold,
+      height: 2.2,
+      color: textPrimary,
+    );
+
+// ─── Selected/highlighted ayah ─────────────────────────────────────────────────
+TextStyle selectedAyahStyle() => const TextStyle(
+      fontFamily: 'Cairo',
+      fontSize: 19,
+      fontWeight: FontWeight.w500,
+      height: 2.0,          // generous height for fully-vocalized Arabic
+      color: primaryDark,
+      letterSpacing: 0.2,
+    );
+
+// ─── Tafsir / explanation body ─────────────────────────────────────────────────
+TextStyle tafsirTextStyle() => TextStyle(
+      fontFamily: 'Cairo',
+      fontSize: 14,
+      height: 1.7,
+      color: textPrimary.withOpacity(0.85),
+    );
+
+// ─── Sajda marker ──────────────────────────────────────────────────────────────
+TextStyle sajdaMarkerStyle() => const TextStyle(
+      fontFamily: 'Cairo',
+      fontSize: 16,
+      fontWeight: FontWeight.w700,
+      color: primaryDark,
+    );
+
+// ─── Juz number (large display) ────────────────────────────────────────────────
+TextStyle juzNumberStyle() => const TextStyle(
+      fontFamily: 'Roboto',
+      fontSize: 28,
+      fontWeight: FontWeight.bold,
+      color: primaryDark,
+    );
+
+// ─── Settings item ─────────────────────────────────────────────────────────────
+TextStyle SttingsTextStyle() => const TextStyle(
+      fontFamily: 'Cairo',
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      color: primaryDark,
+    );

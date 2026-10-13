@@ -4,27 +4,37 @@ import '../../veiw_model/helper/thems/color.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final List<Widget>? actions;
+  final Widget? leading;
 
-  const CustomAppBar({super.key, required this.title});
+  const CustomAppBar({
+    super.key,
+    required this.title,
+    this.actions,
+    this.leading,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(backgroundColor: backgroundColor(context),
+    final canPop = Navigator.of(context).canPop();
+
+    return AppBar(
+      backgroundColor: backgroundColor(context),
       scrolledUnderElevation: 0,
       elevation: 0,
       automaticallyImplyLeading: false,
-
       centerTitle: true,
       title: Text(title, style: appBarTitleStyle()),
-
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.arrow_forward, color: primaryDark),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ],
+      // Show back button only if there's something to pop
+      leading: leading ??
+          (canPop
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                  color: primaryColor,
+                  onPressed: () => Navigator.pop(context),
+                )
+              : null),
+      actions: actions,
     );
   }
 
